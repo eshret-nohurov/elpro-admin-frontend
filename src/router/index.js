@@ -57,7 +57,7 @@ const routes = [
             path: '/navigation/subcategories',
             name: 'Subcategories',
             meta: { requiresAuth: true },
-            component: () => import('@/views/navigation/SubCategories/ListView.vue'),
+            component: () => import('@/views/navigation/subCategories/ListView.vue'),
           },
           {
             path: '/navigation/subcategories/create',
