@@ -25,7 +25,9 @@ const submitting = ref(false)
 const success = ref(false)
 
 // Поля
-const form = ref({})
+const form = ref({
+  position: 1,
+})
 const productSearchResult = ref([])
 const isNew = ref(false)
 
@@ -49,6 +51,7 @@ const fetchSlide = async () => {
       nameTM: response.data.name.tm,
       nameEN: response.data.name.en,
       products: response.data.products,
+      position: response.data.position || 1,
     }
 
     if (response.data.products && response.data.products.length == 0) {
@@ -138,9 +141,8 @@ const submitForm = async () => {
           ? form.value.products.map((el) => el.id)
           : []
         : [],
+      position: form.value.position,
     }
-
-    console.log(`sdfdsfsdfsdfsdfsdfsdfsd ${data.products}`)
 
     await globalStore.makeApiRequest({
       method: 'POST',
@@ -154,7 +156,9 @@ const submitForm = async () => {
     success.value = true
     toast.success('Секция успешно обновлена!')
     router.back()
-    form.value = {}
+    form.value = {
+      position: 1,
+    }
   } catch (e) {
     console.error('Edit section failed:', e)
     if (e.response.status === 401) {
@@ -274,6 +278,17 @@ onMounted(fetchSlide)
                 <div v-else class="text-sm">Ничего не найдено</div>
               </template>
             </VueMultiselect>
+          </div>
+
+          <!-- input -->
+          <div class="w-65 mb-4 mr-4">
+            <label class="block text-sm font-medium text-gray-200"> Позиция </label>
+            <input
+              v-model="form.position"
+              type="text"
+              class="mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2"
+              placeholder="0"
+            />
           </div>
         </div>
 

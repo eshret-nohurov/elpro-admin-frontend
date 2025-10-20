@@ -1,6 +1,6 @@
 <script setup>
 import { useGlobalStore } from '@/stores/global'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 import { useRouter } from 'vue-router'
@@ -14,10 +14,9 @@ const globalStore = useGlobalStore()
 // Поля
 const form = ref({
   categories: [],
-  subcategories: [],
+  stock: 1000,
 })
 const categories = ref([])
-const subcategories = ref([])
 const productSearchResult = ref([])
 const specifications = ref([
   {
@@ -105,9 +104,6 @@ const submitForm = async () => {
     formData.append('price', form.value.price)
     formData.append('stock', form.value.stock)
     formData.append('categories', JSON.stringify(form.value.categories.map((el) => el.value)))
-    if (form.value.subcategories && form.value.subcategories.length > 0) {
-      formData.append('subcategories', JSON.stringify(form.value.subcategories.map((el) => el.id)))
-    }
     if (form.value.relatedProducts && form.value.relatedProducts.length > 0) {
       formData.append(
         'relatedProducts',
@@ -147,44 +143,24 @@ const submitForm = async () => {
 }
 
 // GET DATA
-const fetchCategoryForSubcategory = async () => {
+const fetchCategory = async () => {
   try {
     loading.value = true
 
     const response = await globalStore.makeApiRequest({
       method: 'GET',
-      url: globalStore.api.endpoints.categoriesForSubcategory,
+      url: globalStore.api.endpoints.categoriesForList,
     })
 
     categories.value = response.data
     console.log(categories.value)
   } catch (e) {
-    console.error('fetchCategoryForSubcategory failed:', e)
+    console.error('fetchCategory failed:', e)
     if (e.response.status === 401) {
       router.push('/auth/login')
     }
   } finally {
     loading.value = false
-  }
-}
-
-const getSelectedSubcategories = async () => {
-  try {
-    subcategories.value = []
-    const response = await globalStore.makeApiRequest({
-      method: 'POST',
-      url: globalStore.api.endpoints.selected_subcategories,
-      data: {
-        categories: form.value.categories.map((s) => s.value),
-      },
-    })
-
-    subcategories.value = response.subcategories
-  } catch (e) {
-    console.error('getSelectedSubcategories failed:', e)
-    if (e.response.status === 401) {
-      router.push('/auth/login')
-    }
   }
 }
 
@@ -284,15 +260,7 @@ const handleFileUpload = (event) => {
   }
 }
 
-onMounted(fetchCategoryForSubcategory)
-
-watch(
-  () => form.value.categories,
-  () => {
-    subcategories.value = []
-  },
-  { deep: true },
-)
+onMounted(fetchCategory)
 </script>
 
 <template>
@@ -524,7 +492,6 @@ watch(
                 :close-on-select="false"
                 :clear-on-select="false"
                 :hide-selected="true"
-                @select="getSelectedSubcategories"
                 open-direction="bottom"
                 label="label"
                 track-by="value"
@@ -540,30 +507,6 @@ watch(
               <p v-if="errors.category" class="text-red-600 text-sm">
                 {{ errors.category }}
               </p>
-            </div>
-
-            <!-- select -->
-            <div class="w-65 mb-4 mr-4">
-              <label class="block text-sm font-medium text-gray-200 mb-2"> Подкатегории </label>
-              <VueMultiselect
-                v-model="form.subcategories"
-                :options="subcategories"
-                :multiple="true"
-                :close-on-select="false"
-                :clear-on-select="false"
-                :hide-selected="true"
-                open-direction="bottom"
-                label="name"
-                track-by="id"
-                placeholder="Выберите элементы"
-                select-label="Выбрать"
-                selected-label="Выбрано"
-                deselect-label="Удалить"
-              >
-                <template #noOptions>
-                  <div class="text-sm">Ничего не найдено</div>
-                </template>
-              </VueMultiselect>
             </div>
 
             <!-- input -->

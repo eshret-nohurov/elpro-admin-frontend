@@ -1,6 +1,6 @@
 <script setup>
 import { useGlobalStore } from '@/stores/global'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 import { useRoute, useRouter } from 'vue-router'
@@ -23,10 +23,8 @@ const success = ref(false)
 // Поля
 const form = ref({
   categories: [],
-  subcategories: [],
 })
 const categories = ref([])
-const subcategories = ref([])
 const productSearchResult = ref([])
 const specifications = ref([])
 
@@ -50,45 +48,25 @@ const schema = yup.object({
 // ==== METHODS ====
 // =================
 // GET DATA
-const fetchCategoryForSubcategory = async () => {
+const fetchCategory = async () => {
   try {
     loading.value = true
 
     const response = await globalStore.makeApiRequest({
       method: 'GET',
-      url: globalStore.api.endpoints.categoriesForSubcategory,
+      url: globalStore.api.endpoints.categoriesForList,
     })
 
     categories.value = response.data
 
     fetchData()
-    console.log(categories.value)
   } catch (e) {
-    console.error('fetchCategoryForSubcategory failed:', e)
+    console.error('fetchCategory failed:', e)
     if (e.response.status === 401) {
       router.push('/auth/login')
     }
   } finally {
     loading.value = false
-  }
-}
-
-const getSelectedSubcategories = async (data) => {
-  try {
-    const response = await globalStore.makeApiRequest({
-      method: 'POST',
-      url: globalStore.api.endpoints.selected_subcategories,
-      data: {
-        categories: !data ? form.value.categories.map((s) => s.value) : data,
-      },
-    })
-
-    subcategories.value = response.subcategories
-  } catch (e) {
-    console.error('getSelectedSubcategories failed:', e)
-    if (e.response.status === 401) {
-      router.push('/auth/login')
-    }
   }
 }
 
@@ -140,12 +118,6 @@ const fetchData = async () => {
     form.value.categories = response.data.categories
       .map((id) => categories.value.find((obj) => obj.value === id))
       .filter(Boolean)
-
-    await getSelectedSubcategories(response.data.categories)
-
-    if (response.data.subcategories && response.data.subcategories.length > 0) {
-      form.value.subcategories = subcategories.value
-    }
 
     if (response.data.relatedProducts && response.data.relatedProducts.length > 0) {
       form.value.relatedProducts = response.data.relatedProducts
@@ -266,15 +238,6 @@ const handleFileUpload = (event) => {
   }
 }
 
-// WATCH
-watch(
-  () => form.value.categories,
-  () => {
-    subcategories.value = []
-  },
-  { deep: true },
-)
-
 // ==== METHODS ====
 // =================
 // POST DATA
@@ -333,12 +296,6 @@ const submitForm = async () => {
     formData.append('stock', form.value.stock)
     formData.append('categories', JSON.stringify(form.value.categories.map((el) => el.value)))
 
-    if (form.value.subcategories && form.value.subcategories.length > 0) {
-      formData.append('subcategories', JSON.stringify(form.value.subcategories.map((el) => el.id)))
-    } else {
-      formData.append('subcategories', JSON.stringify([]))
-    }
-
     if (form.value.relatedProducts && form.value.relatedProducts.length > 0) {
       formData.append(
         'relatedProducts',
@@ -383,15 +340,7 @@ const submitForm = async () => {
 
 // =======================================================================================
 
-onMounted(fetchCategoryForSubcategory)
-
-watch(
-  () => form.value.categories,
-  () => {
-    getSelectedSubcategories()
-  },
-  { deep: true },
-)
+onMounted(fetchCategory)
 </script>
 
 <template>
@@ -638,30 +587,6 @@ watch(
               <p v-if="errors.category" class="text-red-600 text-sm">
                 {{ errors.category }}
               </p>
-            </div>
-
-            <!-- select -->
-            <div class="w-65 mb-4 mr-4">
-              <label class="block text-sm font-medium text-gray-200 mb-2"> Подкатегории </label>
-              <VueMultiselect
-                v-model="form.subcategories"
-                :options="subcategories"
-                :multiple="true"
-                :close-on-select="false"
-                :clear-on-select="false"
-                :hide-selected="true"
-                open-direction="bottom"
-                label="name"
-                track-by="id"
-                placeholder="Выберите элементы"
-                select-label="Выбрать"
-                selected-label="Выбрано"
-                deselect-label="Удалить"
-              >
-                <template #noOptions>
-                  <div class="text-sm">Ничего не найдено</div>
-                </template>
-              </VueMultiselect>
             </div>
 
             <!-- input -->

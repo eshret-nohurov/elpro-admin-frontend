@@ -1,6 +1,8 @@
 <script setup>
 import { useGlobalStore } from '@/stores/global'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import VueMultiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.css'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import * as yup from 'yup'
@@ -26,15 +28,16 @@ const form = ref({
   nameTM: '',
   nameEN: '',
   url: '',
-  subcategories: '1',
   image: null,
+  position: 1,
 })
+
+const categories = ref([])
 
 // Схема валидации
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
   url: yup.string().required('Пожалуйста заполните поле'),
-  subcategories: yup.string().required('Пожалуйста выберите подкатегорию'),
 })
 
 // GET DATA
@@ -52,8 +55,15 @@ const fetchCategory = async () => {
       nameTM: response.data.name.tm,
       nameEN: response.data.name.en,
       url: response.data.url,
-      subcategories: '1',
       image: response.data.icon,
+      position: response.data.position || 1,
+    }
+
+    if (response.data.parent) {
+      form.value.categories = {
+        label: response.data.parent.name.ru,
+        value: response.data.parent._id,
+      }
     }
 
     console.log(form.value)
@@ -64,6 +74,23 @@ const fetchCategory = async () => {
     }
   } finally {
     loading.value = false
+  }
+}
+
+const fetchCategoryForList = async () => {
+  try {
+    const response = await globalStore.makeApiRequest({
+      method: 'GET',
+      url: globalStore.api.endpoints.categoriesForList,
+    })
+
+    categories.value = response.data
+    console.log(categories.value)
+  } catch (e) {
+    console.error('fetchCategoryForSubcategory failed:', e)
+    if (e.response.status === 401) {
+      router.push('/auth/login')
+    }
   }
 }
 
@@ -92,7 +119,8 @@ const submitForm = async () => {
     }
     formData.append('name', JSON.stringify(name))
     formData.append('url', form.value.url)
-    // formData.append('subcategories', form.value.subcategories)
+    formData.append('parentId', form.value.categories ? form.value.categories.value : '')
+    formData.append('position', form.value.position)
     if (form.value.image) {
       formData.append('icon', form.value.image)
     }
@@ -114,8 +142,8 @@ const submitForm = async () => {
       nameTM: '',
       nameEN: '',
       url: '',
-      subcategories: '1',
       image: null,
+      position: 1,
     }
   } catch (e) {
     console.error('Edit category failed:', e)
@@ -152,10 +180,11 @@ onBeforeUnmount(() => {
 })
 
 onMounted(fetchCategory)
+onMounted(fetchCategoryForList)
 </script>
 
 <template>
-  <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg">
+  <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg h-full">
     <!-- head -->
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
@@ -254,6 +283,46 @@ onMounted(fetchCategory)
               {{ errors.image }}
             </p>
           </div>
+
+          <!-- select -->
+          <div class="w-65 mb-4 mr-4">
+            <label class="block text-sm font-medium text-gray-200 mb-2">
+              Родительская категория
+            </label>
+            <VueMultiselect
+              v-model="form.categories"
+              :options="categories"
+              :multiple="false"
+              :close-on-select="true"
+              :clear-on-select="false"
+              :hide-selected="true"
+              open-direction="bottom"
+              label="label"
+              track-by="value"
+              placeholder="Выберите элементы"
+              select-label="Выбрать"
+              selected-label="Выбрано"
+              deselect-label="Удалить"
+            >
+              <template #noOptions>
+                <div class="text-sm">Ничего не найдено</div>
+              </template>
+            </VueMultiselect>
+          </div>
+        </div>
+
+        <!-- Строка inputs -->
+        <div class="flex flex-wrap flex-row mt-5">
+          <!-- input -->
+          <div class="w-65 mb-4 mr-4">
+            <label class="block text-sm font-medium text-gray-200 mb-2"> Позиция </label>
+            <input
+              v-model="form.position"
+              type="text"
+              class="mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2"
+              placeholder="0"
+            />
+          </div>
         </div>
 
         <!-- Строка BUTTONS -->
@@ -294,3 +363,67 @@ onMounted(fetchCategory)
     </div>
   </div>
 </template>
+
+<style>
+/* Стили поля ввода и тегов */
+.multiselect__tags {
+  background-color: #101828;
+  border: 1px solid #6a7282;
+  color: white;
+}
+
+.multiselect__tags .multiselect__tags-wrap .multiselect__tag {
+  background: #4f39f6;
+}
+
+.multiselect__tags .multiselect__tags-wrap .multiselect__tag .multiselect__tag-icon::after {
+  color: rgba(255, 255, 255);
+}
+
+.multiselect__placeholder {
+  color: white;
+}
+
+.multiselect__input {
+  background-color: #101828;
+  color: white;
+  padding: 0;
+  font-size: 14px;
+}
+
+.multiselect__input,
+.multiselect__single {
+  background: #4f39f6;
+  font-size: 14px;
+}
+
+.multiselect__input::placeholder {
+  color: white;
+  font-size: 14px;
+}
+
+.multiselect__input:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.multiselect__content-wrapper {
+  background: #101828;
+  border: 1px solid #6a7282;
+  color: white;
+  overflow: hidden;
+}
+
+.multiselect__content-wrapper .multiselect__option {
+  white-space: normal;
+  line-height: 140%;
+}
+
+.multiselect__content-wrapper .multiselect__option--highlight {
+  background: #4f46e5;
+}
+
+.multiselect__content-wrapper .multiselect__option--highlight::after {
+  background: #4f46e5;
+}
+</style>

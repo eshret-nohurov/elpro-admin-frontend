@@ -15,7 +15,7 @@ export const useGlobalStore = defineStore('global', {
 
         //categoies
         categories: '/categories',
-        categoriesForSubcategory: '/categories-for-subcategory',
+        categoriesForList: '/categories-for-list',
         category: (id) => `/category/${id}`,
         create_category: '/create_category',
         update_category: (id) => `/update_category/${id}`,

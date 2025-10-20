@@ -92,7 +92,7 @@ const handleLogout = async () => {
               </li>
 
               <!-- Подкатегории -->
-              <li
+              <!-- <li
                 :class="{
                   'bg-slate-800': $route.path.startsWith('/navigation/subcategories'),
                   'flex cursor-pointer items-center justify-between rounded-lg  text-gray-100 hover:bg-slate-800': true,
@@ -101,7 +101,7 @@ const handleLogout = async () => {
                 <RouterLink class="block w-full h-full px-4 py-2" to="/navigation/subcategories">
                   Подкатегории
                 </RouterLink>
-              </li>
+              </li> -->
             </ul>
           </details>
         </li>

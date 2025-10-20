@@ -12,7 +12,9 @@ const router = useRouter()
 const globalStore = useGlobalStore()
 
 // Поля
-const form = ref({})
+const form = ref({
+  position: 1,
+})
 const productSearchResult = ref([])
 const isNew = ref(false)
 
@@ -102,6 +104,7 @@ const submitForm = async () => {
           ? form.value.products.map((el) => el.id)
           : []
         : [],
+      position: form.value.position,
     }
 
     await globalStore.makeApiRequest({
@@ -116,7 +119,9 @@ const submitForm = async () => {
     success.value = true
     toast.success('Секция успешно создана!')
     router.back()
-    form.value = {}
+    form.value = {
+      position: 1,
+    }
   } catch (e) {
     console.error('Created section failed:', e)
     if (e.response.status === 401) {
@@ -234,6 +239,17 @@ const submitForm = async () => {
                 <div v-else class="text-sm">Ничего не найдено</div>
               </template>
             </VueMultiselect>
+          </div>
+
+          <!-- input -->
+          <div class="w-65 mb-4 mr-4">
+            <label class="block text-sm font-medium text-gray-200"> Позиция </label>
+            <input
+              v-model="form.position"
+              type="text"
+              class="mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2"
+              placeholder="0"
+            />
           </div>
         </div>
 
