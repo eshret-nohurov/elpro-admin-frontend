@@ -223,7 +223,7 @@ onMounted(fetchSlide)
 
           <button
             type="button"
-            class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition-colors ml-5 cursor-pointer"
+            class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition-colors mt-3 sm:mt-0 sm:ml-5 cursor-pointer"
             @click="$router.back()"
           >
             Отмена
@@ -231,7 +231,7 @@ onMounted(fetchSlide)
         </div>
       </form>
 
-      <div v-if="previewUrl" class="mt-2 max-w-70 max-h-50 ml-10 overflow-hidden">
+      <div v-if="previewUrl" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
         <img
           :src="previewUrl"
           alt="Превью изображения"
@@ -239,7 +239,7 @@ onMounted(fetchSlide)
         />
       </div>
 
-      <div v-if="!previewUrl" class="mt-2 max-w-70 max-h-50 ml-10 overflow-hidden">
+      <div v-if="!previewUrl" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
         <img
           :src="`/Users/eshret/Documents/Programming/Projects/elpro/backend${form.image}`"
           alt="Превью изображения"

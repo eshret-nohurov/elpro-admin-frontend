@@ -10,6 +10,15 @@ const globalStore = useGlobalStore()
 const toast = useToast()
 
 const loading = ref(false)
+const locationOptions = [
+  'Ашхабад',
+  'Аркадаг',
+  'Ахалский велаят',
+  'Балканский велаят',
+  'Ташаузский велаят',
+  'Лебабский велаят',
+  'Марыйский велаят',
+]
 
 // Ошибки
 const errors = ref({})
@@ -19,7 +28,9 @@ const submitting = ref(false)
 const success = ref(false)
 
 // Поля
-const form = ref({})
+const form = ref({
+  deliveryPrices: {},
+})
 
 // Схема валидации
 const schema = yup.object({
@@ -38,7 +49,10 @@ const fetchSettings = async () => {
 
     if (response.data.length > 0) {
       form.value.usdToTmtRate = response.data[0].usdToTmtRate
+      form.value.deliveryPrices = response.data[0].deliveryPrices || {}
       form.value.id = response.data[0]._id
+    } else {
+      form.value.deliveryPrices = {}
     }
   } catch (e) {
     console.error('fetchSettings failed:', e)
@@ -69,6 +83,13 @@ const submitForm = async () => {
   try {
     const data = {
       usdToTmtRate: form.value.usdToTmtRate,
+      deliveryPrices: locationOptions.reduce((prices, location) => {
+        const value = form.value.deliveryPrices?.[location]
+        if (value !== '' && value !== null && value !== undefined) {
+          prices[location] = Number(value)
+        }
+        return prices
+      }, {}),
     }
 
     await globalStore.makeApiRequest({
@@ -111,7 +132,7 @@ onMounted(fetchSettings)
 
     <!-- body -->
     <div class="flex">
-      <form class="mt-10" @submit.prevent="submitForm">
+      <form class="mt-10 w-full max-w-5xl" @submit.prevent="submitForm">
         <!-- Строка inputs -->
         <div class="flex flex-wrap flex-row">
           <!-- input -->
@@ -131,6 +152,31 @@ onMounted(fetchSettings)
             <p v-if="errors.usdToTmtRate" class="text-red-600 text-sm mt-1 px-1">
               {{ errors.usdToTmtRate }}
             </p>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <h2 class="text-lg font-semibold text-white">Стоимость доставки по городам</h2>
+          <p class="mt-1 text-sm text-gray-400">
+            Если поле оставить пустым, доставка для этого города будет бесплатной.
+          </p>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <label
+              v-for="location in locationOptions"
+              :key="location"
+              class="block rounded-lg border border-gray-700 bg-gray-950 p-4"
+            >
+              <span class="text-sm font-medium text-gray-200">{{ location }}</span>
+              <input
+                v-model="form.deliveryPrices[location]"
+                type="number"
+                min="0"
+                step="0.01"
+                class="mt-2 w-full rounded border border-gray-500 p-2 text-sm text-white shadow-sm focus:border-indigo-600 focus:outline-none"
+                placeholder="Бесплатно"
+              />
+            </label>
           </div>
         </div>
 

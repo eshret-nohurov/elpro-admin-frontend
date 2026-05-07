@@ -24,6 +24,19 @@ const routes = [
         meta: { requiresAuth: true },
         component: () => import('@/views/OrdersView.vue'),
       },
+      {
+        path: '/orders/create',
+        name: 'Create Order',
+        meta: { requiresAuth: true },
+        component: () => import('@/views/OrderFormView.vue'),
+      },
+      {
+        path: '/orders/edit/:id',
+        name: 'Edit Order',
+        meta: { requiresAuth: true },
+        component: () => import('@/views/OrderFormView.vue'),
+        props: true,
+      },
 
       {
         path: '/navigation',
@@ -228,6 +241,12 @@ const routes = [
         name: 'Settings',
         meta: { requiresAuth: true, role: 'admin' },
         component: () => import('@/views/SettingsView.vue'),
+      },
+      {
+        path: '/logs',
+        name: 'Logs',
+        meta: { requiresAuth: true, role: 'admin' },
+        component: () => import('@/views/LogsView.vue'),
       },
     ],
   },

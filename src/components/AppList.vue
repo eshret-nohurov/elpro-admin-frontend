@@ -62,16 +62,17 @@ const pageChange = (page) => {
 }
 
 const startIndex = computed(() => {
+  if (!props.meta || !props.meta.page || !props.meta.limit) return 0
   return (props.meta.page - 1) * props.meta.limit
 })
 </script>
 
 <template>
-  <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ props.title }}</h2>
+  <div class="overflow-hidden rounded-lg bg-gray-900 p-3 sm:p-4">
+    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="text-lg font-semibold text-white">{{ props.title }}</h2>
       <RouterLink
-        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-600"
+        class="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 sm:w-auto"
         :to="props.addButtRoute"
         v-if="!props.lengthLimit"
       >
@@ -91,7 +92,45 @@ const startIndex = computed(() => {
 
     <AppEmpty v-if="!props.listData.length" />
 
-    <table v-else class="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-700 mb-7">
+    <div v-else class="space-y-3 md:hidden">
+      <article
+        v-for="(item, index) in props.listData"
+        :key="item._id || index"
+        class="rounded-xl border border-slate-700 bg-gray-950 p-4 text-white"
+      >
+        <div class="mb-3 flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <span class="text-xs uppercase tracking-wide text-gray-400">#{{ startIndex + index + 1 }}</span>
+          <div class="flex gap-2">
+            <RouterLink
+              class="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white"
+              :to="props.editButtRoute + '/' + item._id"
+            >
+              Edit
+            </RouterLink>
+            <button
+              @click="emit('deleteData', item)"
+              class="rounded-lg bg-red-500 px-3 py-2 text-xs font-semibold text-white"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <dl class="space-y-2">
+          <div
+            v-for="(listVal, index) in props.listVal"
+            :key="listVal"
+            class="grid grid-cols-[42%_1fr] gap-3 text-sm"
+          >
+            <dt class="text-gray-400">{{ props.listHead[index + 1] || listVal }}</dt>
+            <dd class="min-w-0 break-words text-gray-100">{{ item[listVal] }}</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+
+    <div v-if="props.listData.length" class="hidden overflow-x-auto md:block">
+      <table class="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-700 mb-7">
       <thead class="ltr:text-left rtl:text-right">
         <tr class="*:font-medium *:text-gray-900 dark:*:text-white">
           <th
@@ -138,6 +177,7 @@ const startIndex = computed(() => {
         </tr>
       </tbody>
     </table>
+    </div>
 
     <AppPagination
       @prev-page="prevPage"

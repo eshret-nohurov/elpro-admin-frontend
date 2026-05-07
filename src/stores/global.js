@@ -12,6 +12,9 @@ export const useGlobalStore = defineStore('global', {
       baseURL: import.meta.env.VITE_API_URL,
       endpoints: {
         login: '/auth/login',
+        dashboard: '/dashboard',
+        logs: '/logs',
+        log_users: '/logs/users',
 
         //categoies
         categories: '/categories',
@@ -76,6 +79,13 @@ export const useGlobalStore = defineStore('global', {
         settings: '/settings',
         create_settings: '/settings/create',
         update_settings: (id) => `/settings/update/${id}`,
+
+        // Orders
+        orders: '/orders',
+        order: (id) => `/orders/${id}`,
+        create_order: '/orders/create',
+        update_order: (id) => `/orders/${id}/update`,
+        update_order_status: (id) => `/orders/${id}/status`,
       },
     },
 

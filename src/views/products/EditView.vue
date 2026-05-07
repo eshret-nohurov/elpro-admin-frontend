@@ -34,6 +34,16 @@ const lastQueryProdSearch = ref('')
 // Ошибки
 const errors = ref({})
 
+const toDatetimeLocal = (value) => {
+  if (!value) return ''
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const timezoneOffset = date.getTimezoneOffset() * 60000
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16)
+}
+
 // Схема валидации
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
@@ -113,6 +123,8 @@ const fetchData = async () => {
 
       price: response.data.price,
       stock: response.data.stock,
+      discountPrice: response.data.discountPrice || '',
+      discountExpiresAt: toDatetimeLocal(response.data.discountExpiresAt),
     }
 
     form.value.categories = response.data.categories
@@ -294,6 +306,8 @@ const submitForm = async () => {
     formData.append('fullDescription', JSON.stringify(fullDescription))
     formData.append('price', form.value.price)
     formData.append('stock', form.value.stock)
+    formData.append('discountPrice', form.value.discountPrice || '')
+    formData.append('discountExpiresAt', form.value.discountExpiresAt || '')
     formData.append('categories', JSON.stringify(form.value.categories.map((el) => el.value)))
 
     if (form.value.relatedProducts && form.value.relatedProducts.length > 0) {
@@ -358,7 +372,7 @@ onMounted(fetchCategory)
 
     <!-- body -->
     <form class="mt-10" @submit.prevent="submitForm">
-      <div class="flex flex-wrap flex-row gap-10">
+      <div class="flex flex-col gap-6 xl:flex-row xl:flex-wrap xl:gap-10">
         <!-- ============================================ -->
         <!-- SIDE 1 -->
         <!-- ============================================ -->
@@ -539,6 +553,38 @@ onMounted(fetchCategory)
               </p>
             </div>
 
+            <div class="w-65 mb-4 mr-4">
+              <label class="block text-sm font-medium text-gray-200 mb-2">
+                Скидка (%)
+              </label>
+              <input
+                v-model="form.discountPrice"
+                type="number"
+                min="0"
+                max="99"
+                step="1"
+                class="mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2"
+                placeholder="Например: 10"
+              />
+              <p class="mt-1 text-xs text-gray-400">
+                10 значит минус 10% от обычной цены. Оставь пустым, если скидки нет.
+              </p>
+            </div>
+
+            <div class="w-65 mb-4 mr-4">
+              <label class="block text-sm font-medium text-gray-200 mb-2">
+                Скидка действует до
+              </label>
+              <input
+                v-model="form.discountExpiresAt"
+                type="datetime-local"
+                class="discount-date-input mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2"
+              />
+              <p class="mt-1 text-xs text-gray-400">
+                Если оставить пустым, скидка будет действовать пока ее не убрать вручную.
+              </p>
+            </div>
+
             <!-- input for image upload -->
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
@@ -632,7 +678,7 @@ onMounted(fetchCategory)
         <!-- ============================================ -->
         <!-- SIDE 2 -->
         <!-- ============================================ -->
-        <div class="min-w-200">
+        <div class="w-full min-w-0 xl:min-w-[50rem]">
           <div class="mb-6">
             <div class="flex items-center justify-between mb-5">
               <h3 class="text-lg font-medium text-gray-200">Характеристики товара</h3>
@@ -748,7 +794,7 @@ onMounted(fetchCategory)
 
         <button
           type="button"
-          class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition-colors ml-5 cursor-pointer"
+          class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition-colors mt-3 sm:mt-0 sm:ml-5 cursor-pointer"
           @click="$router.back()"
         >
           Отмена
@@ -813,5 +859,11 @@ onMounted(fetchCategory)
 
 .multiselect__content-wrapper .multiselect__option--highlight::after {
   background: #4f46e5;
+}
+
+.discount-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(1) brightness(1.8);
+  opacity: 1;
 }
 </style>
