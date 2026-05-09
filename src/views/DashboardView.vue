@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Dashboard Metrics
+ * Показывает сводку по заказам, товарам и доступным показателям с учетом роли пользователя.
+ */
 import AppLoader from '@/components/AppLoader.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'

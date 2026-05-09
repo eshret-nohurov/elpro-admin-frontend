@@ -1,3 +1,7 @@
+/*
+ * Vite Runtime
+ * Настраивает сборку админки, переменные окружения, алиасы и dev-сервер.
+ */
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'node:path'
@@ -5,7 +9,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig(({ mode }) => {
-  // Добавляем mode в параметры
+
   const env = loadEnv(mode, process.cwd(), 'VITE_')
 
   return {

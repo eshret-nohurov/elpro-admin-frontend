@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Product Section Create
+ * Создает секцию товаров с переводами, выбранными товарами и порядком показа.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
@@ -11,23 +15,23 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// Поля
+
 const form = ref({
   position: 1,
 })
 const productSearchResult = ref([])
 const isNew = ref(false)
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const isLoadingProductSearch = ref(false)
 const lastQueryProdSearch = ref('')
 const submitting = ref(false)
 const success = ref(false)
 
-// Схема валидации
+
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
 })
@@ -76,7 +80,7 @@ const handleInputChangeForProducts = async (val) => {
   }
 }
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -135,7 +139,7 @@ const submitForm = async () => {
 
 <template>
   <div class="bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Создание Секции товаров
@@ -146,12 +150,12 @@ const submitForm = async () => {
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название секции RU <span class="text-red-600">*</span>
@@ -170,7 +174,7 @@ const submitForm = async () => {
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> Название секции TM </label>
             <input
@@ -181,7 +185,7 @@ const submitForm = async () => {
             />
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> Название секции EN </label>
             <input
@@ -192,7 +196,7 @@ const submitForm = async () => {
             />
           </div>
 
-          <!-- input -->
+
           <div class="w-55 flex justify-center">
             <label for="Option1" class="flex items-center gap-3">
               <input
@@ -206,7 +210,7 @@ const submitForm = async () => {
             </label>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4" v-if="!isNew">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Продукты (максимум 8)
@@ -241,7 +245,7 @@ const submitForm = async () => {
             </VueMultiselect>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200"> Позиция </label>
             <input
@@ -253,7 +257,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"
@@ -277,7 +281,7 @@ const submitForm = async () => {
 </template>
 
 <style>
-/* Стили поля ввода и тегов */
+
 .multiselect__tags {
   background-color: #101828;
   border: 1px solid #6a7282;

@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Main Banner Edit
+ * Редактирует слайд главного баннера и обновляет изображение при необходимости.
+ */
 import AppHelpModal from '@/components/AppHelpModal.vue'
 import { useGlobalStore } from '@/stores/global'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
@@ -14,14 +18,14 @@ const toast = useToast()
 const loading = ref(false)
 const id = route.params.id
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Поля
+
 const form = ref({
   name: '',
   url: '',
@@ -29,12 +33,12 @@ const form = ref({
 })
 const isModalOpen = ref(false)
 
-// Схема валидации
+
 const schema = yup.object({
   name: yup.string().required('Пожалуйста заполните поле'),
 })
 
-// GET DATA
+
 const fetchSlide = async () => {
   try {
     loading.value = true
@@ -61,7 +65,7 @@ const fetchSlide = async () => {
   }
 }
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -110,7 +114,7 @@ const submitForm = async () => {
   }
 }
 
-// Превью изображения
+
 const previewUrl = ref(null)
 
 const handleFileUpload = (event) => {
@@ -141,7 +145,7 @@ onMounted(fetchSlide)
   <AppHelpModal v-model:isOpen="isModalOpen" @close="isModalOpen = false" />
 
   <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Редактирование слайда главного баннера
@@ -152,12 +156,12 @@ onMounted(fetchSlide)
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название слайда<span class="text-red-600">*</span>
@@ -176,7 +180,7 @@ onMounted(fetchSlide)
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> URL </label>
             <input
@@ -187,7 +191,7 @@ onMounted(fetchSlide)
             />
           </div>
 
-          <!-- input for image upload -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="flex text-sm font-medium text-gray-200 mb-2">
               Изображение <span class="text-red-600 ml-1">*</span>
@@ -210,7 +214,7 @@ onMounted(fetchSlide)
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"

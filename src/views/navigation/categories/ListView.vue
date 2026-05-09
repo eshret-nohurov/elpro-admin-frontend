@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Categories List
+ * Показывает категории с поиском, пагинацией и быстрыми действиями управления.
+ */
 import AppList from '@/components/AppList.vue'
 import AppLoader from '@/components/AppLoader.vue'
 import AppModal from '@/components/AppModal.vue'
@@ -11,7 +15,7 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// var
+
 const loading = ref(false)
 const currentPage = ref(1)
 const limit = ref(15)
@@ -25,7 +29,7 @@ let searchTimer = null
 
 const hasSearch = computed(() => Boolean(search.value.trim()))
 
-// GET DATA
+
 const fetchCategories = async () => {
   try {
     loading.value = true
@@ -52,7 +56,7 @@ const fetchCategories = async () => {
   }
 }
 
-// Навигация по страницам
+
 const nextPage = () => {
   if (meta.value?.hasNext) {
     currentPage.value++
@@ -87,7 +91,7 @@ const resetSearch = () => {
   applySearch()
 }
 
-// Подтверждение удаления
+
 const handleConfirm = async () => {
   try {
     isModalOpen.value = false

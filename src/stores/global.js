@@ -1,3 +1,7 @@
+/*
+ * Global API Store
+ * Хранит карту API endpoints и общий метод запросов с обработкой авторизации и ошибок.
+ */
 import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
 import { defineStore } from 'pinia'
@@ -16,7 +20,7 @@ export const useGlobalStore = defineStore('global', {
         logs: '/logs',
         log_users: '/logs/users',
 
-        //categoies
+
         categories: '/categories',
         categoriesForList: '/categories-for-list',
         category: (id) => `/category/${id}`,
@@ -24,35 +28,35 @@ export const useGlobalStore = defineStore('global', {
         update_category: (id) => `/update_category/${id}`,
         delete_category: (id) => `/delete_category/${id}`,
 
-        // subcategoies
+
         subcategories: '/subcategories',
         subcategory: (id) => `/subcategory/${id}`,
         create_subcategory: '/create_subcategory',
         update_subcategory: (id) => `/update_subcategory/${id}`,
         delete_subcategory: (id) => `/delete_subcategory/${id}`,
 
-        // main banner
+
         main_banner_slides: '/main_banner_slides',
         main_banner_slide: (id) => `/main_banner_slide/${id}`,
         create_main_banner_slide: '/create_main_banner_slide',
         update_main_banner_slide: (id) => `/update_main_banner_slide/${id}`,
         delete_main_banner_slide: (id) => `/delete_main_banner_slide/${id}`,
 
-        // promo banner
+
         promo_banner_slides: '/promo_banner_slides',
         promo_banner_slide: (id) => `/promo_banner_slide/${id}`,
         create_promo_banner_slide: '/create_promo_banner_slide',
         update_promo_banner_slide: (id) => `/update_promo_banner_slide/${id}`,
         delete_promo_banner_slide: (id) => `/delete_promo_banner_slide/${id}`,
 
-        // footer banner
+
         footer_banner_slides: '/footer_banner_slides',
         footer_banner_slide: (id) => `/footer_banner_slide/${id}`,
         create_footer_banner_slide: '/create_footer_banner_slide',
         update_footer_banner_slide: (id) => `/update_footer_banner_slide/${id}`,
         delete_footer_banner_slide: (id) => `/delete_footer_banner_slide/${id}`,
 
-        // product
+
         products: '/products',
         product: (id) => `/product/${id}`,
         create_product: '/create_product',
@@ -61,26 +65,26 @@ export const useGlobalStore = defineStore('global', {
         search_products: '/search_products',
         delete_product: (id) => `/delete_product/${id}`,
 
-        // products sections
+
         products_section: '/products_section',
         section: (id) => `/products_section/${id}`,
         create_products_section: '/create_products_section',
         update_products_section: (id) => `/update_products_section/${id}`,
         delete_products_section: (id) => `/delete_products_section/${id}`,
 
-        // User
+
         users: '/users',
         user: (id) => `/users/${id}`,
         create_user: '/users/create',
         update_user: (id) => `/users/update/${id}`,
         delete_user: (id) => `/users/delete/${id}`,
 
-        // Settings
+
         settings: '/settings',
         create_settings: '/settings/create',
         update_settings: (id) => `/settings/update/${id}`,
 
-        // Orders
+
         orders: '/orders',
         order: (id) => `/orders/${id}`,
         create_order: '/orders/create',
@@ -135,20 +139,20 @@ export const useGlobalStore = defineStore('global', {
       if (error.response) {
         switch (error.response.status) {
           case 401:
-            // this.error = 'Ошибка авторизации. Пожалуйста, войдите снова.'
+
             authStore.logout()
             break
           case 403:
-            // this.error = 'Доступ запрещён.'
+
             break
           case 404:
-            // this.error = 'Ресурс не найден.'
+
             break
           case 500:
-            // this.error = 'Ошибка сервера. Попробуйте позже.'
+
             break
           default:
-          // this.error = 'Произошла ошибка: ' + error.response.data.message
+
         }
       } else if (error.request) {
         this.error = 'Нет ответа от сервера. Проверьте подключение.'
@@ -156,7 +160,7 @@ export const useGlobalStore = defineStore('global', {
         this.error = 'Ошибка при отправке запроса: ' + error.message
       }
 
-      // toast.error(this.error || 'Произошла ошибка при выполнении запроса.')
+
       toast.error(error.response.data.error)
       console.error('API Error:', error.response.data.error)
     },

@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Pagination Control
+ * Строит безопасную пагинацию из meta-данных API и управляет переходами по страницам.
+ */
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -13,7 +17,7 @@ const props = defineProps({
       hasNext: false,
     }),
     validator: (value) => {
-      // Проверяем, что meta не null и содержит необходимые свойства
+
       return (
         value === null ||
         (typeof value === 'object' &&
@@ -28,7 +32,7 @@ const props = defineProps({
 
 const emit = defineEmits(['prevPage', 'nextPage', 'pageChange'])
 
-// Используем безопасное обращение к свойствам meta
+
 const safeMeta = computed(() => ({
   page: 1,
   limit: 10,
@@ -39,7 +43,7 @@ const safeMeta = computed(() => ({
   ...props.meta,
 }))
 
-// Генерация диапазона страниц
+
 const pagesRange = computed(() => {
   const current = safeMeta.value.page
   const total = safeMeta.value.totalPages
@@ -62,7 +66,7 @@ const pagesRange = computed(() => {
 
 <template>
   <div v-if="safeMeta.totalPages > 1" class="flex justify-center items-center gap-1 mt-6">
-    <!-- Кнопка "Назад" -->
+
     <button
       class="grid size-8 place-content-center rounded border border-white transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rtl:rotate-180 dark:border-gray-400 dark:hover:bg-gray-800 text-gray-400 cursor-pointer"
       @click="emit('prevPage')"
@@ -83,7 +87,7 @@ const pagesRange = computed(() => {
       </svg>
     </button>
 
-    <!-- Номера страниц -->
+
     <template v-for="(page, index) in pagesRange" :key="index">
       <span v-if="page === '...'" class="size-8 flex items-center justify-center text-white">
         ...
@@ -102,7 +106,7 @@ const pagesRange = computed(() => {
       </button>
     </template>
 
-    <!-- Кнопка "Вперед" -->
+
     <button
       class="grid size-8 place-content-center rounded border border-white transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rtl:rotate-180 dark:border-gray-400 dark:hover:bg-gray-800 text-gray-400 cursor-pointer"
       @click="emit('nextPage')"

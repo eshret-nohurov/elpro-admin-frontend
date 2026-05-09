@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Admin Sidebar
+ * Показывает основные разделы админки и адаптирует навигацию под текущую роль.
+ */
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
@@ -63,7 +67,7 @@ const handleLogout = async () => {
       </div>
 
       <ul class="mt-10 space-y-1">
-        <!-- Dashboard -->
+
         <li>
           <RouterLink
             to="/dashboard"
@@ -74,7 +78,7 @@ const handleLogout = async () => {
           </RouterLink>
         </li>
 
-        <!-- Заказы -->
+
         <li>
           <RouterLink
             to="/orders"
@@ -85,7 +89,7 @@ const handleLogout = async () => {
           </RouterLink>
         </li>
 
-        <!-- Категории -->
+
         <li
           :class="{
             'bg-slate-800': $route.path.startsWith('/navigation/categories'),
@@ -97,7 +101,7 @@ const handleLogout = async () => {
           </RouterLink>
         </li>
 
-        <!-- Главная страница -->
+
         <li>
           <details class="group [&_summary::-webkit-details-marker]:hidden">
             <summary
@@ -125,7 +129,7 @@ const handleLogout = async () => {
             </summary>
 
             <ul class="mt-2 space-y-1 px-4">
-              <!-- Главный баннер -->
+
               <li
                 :class="{
                   'bg-slate-800': $route.path.startsWith('/main-page/main-banner'),
@@ -137,7 +141,7 @@ const handleLogout = async () => {
                 </RouterLink>
               </li>
 
-              <!-- Promo баннер -->
+
               <li
                 :class="{
                   'bg-slate-800': $route.path.startsWith('/main-page/promo-banner'),
@@ -149,7 +153,7 @@ const handleLogout = async () => {
                 </RouterLink>
               </li>
 
-              <!-- Секция товаров -->
+
               <li
                 :class="{
                   'bg-slate-800': $route.path.startsWith('/main-page/products-section'),
@@ -161,7 +165,7 @@ const handleLogout = async () => {
                 </RouterLink>
               </li>
 
-              <!-- Footer баннер -->
+
               <li
                 :class="{
                   'bg-slate-800': $route.path.startsWith('/main-page/footer-banner'),

@@ -1,3 +1,7 @@
+/*
+ * Admin Router
+ * Описывает разделы админки, права доступа и вложенную структуру страниц управления.
+ */
 import { useAuthStore } from '@/stores/auth'
 import { createRouter, createWebHistory } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
@@ -65,7 +69,7 @@ const routes = [
             props: true,
           },
 
-          // subcategories
+
           {
             path: '/navigation/subcategories',
             name: 'Subcategories',
@@ -94,7 +98,7 @@ const routes = [
         meta: { requiresAuth: true },
         component: () => import('@/views/main_page/MainPageWrapper.vue'),
         children: [
-          // MAIN BANNER
+
           {
             path: '/main-page/main-banner',
             name: 'Main Banner',
@@ -115,7 +119,7 @@ const routes = [
             props: true,
           },
 
-          // PROMO BANNER
+
           {
             path: '/main-page/promo-banner',
             name: 'Promo Banner',
@@ -136,7 +140,7 @@ const routes = [
             props: true,
           },
 
-          // PRODUCTS SECTION
+
           {
             path: '/main-page/products-section',
             name: 'Products Section',
@@ -157,7 +161,7 @@ const routes = [
             props: true,
           },
 
-          // FOOTER BANNER
+
           {
             path: '/main-page/footer-banner',
             name: 'Footer Banner',

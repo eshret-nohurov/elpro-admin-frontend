@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Orders List
+ * Показывает заказы, статусы, скидки, даты создания и редактирования с пагинацией.
+ */
 import AppEmpty from '@/components/AppEmpty.vue'
 import AppLoader from '@/components/AppLoader.vue'
 import AppPagination from '@/components/AppPagination.vue'

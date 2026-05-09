@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Products List
+ * Показывает товары с поиском и фильтрами по скидкам, категориям и остаткам.
+ */
 import AppEmpty from '@/components/AppEmpty.vue'
 import AppLoader from '@/components/AppLoader.vue'
 import AppModal from '@/components/AppModal.vue'

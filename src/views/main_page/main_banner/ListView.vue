@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Main Banners List
+ * Показывает главный баннер с пагинацией и действиями редактирования.
+ */
 import AppList from '@/components/AppList.vue'
 import AppLoader from '@/components/AppLoader.vue'
 import AppModal from '@/components/AppModal.vue'
@@ -11,7 +15,7 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// var
+
 const loading = ref(false)
 const currentPage = ref(1)
 const limit = ref(15)
@@ -21,7 +25,7 @@ const isModalOpen = ref(false)
 const deleteData = ref({})
 const modalTitle = ref('')
 
-// GET DATA
+
 const fetchSlides = async () => {
   try {
     loading.value = true
@@ -47,7 +51,7 @@ const fetchSlides = async () => {
   }
 }
 
-// Навигация по страницам
+
 const nextPage = () => {
   if (meta.value?.hasNext) {
     currentPage.value++
@@ -67,7 +71,7 @@ const pageChange = (page) => {
   fetchSlides()
 }
 
-// Подтверждение удаления
+
 const handleConfirm = async () => {
   try {
     isModalOpen.value = false

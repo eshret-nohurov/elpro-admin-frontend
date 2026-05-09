@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Store Settings
+ * Редактирует курс валют, контакты и цены доставки для городов.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -20,24 +24,24 @@ const locationOptions = [
   'Марыйский велаят',
 ]
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Поля
+
 const form = ref({
   deliveryPrices: {},
 })
 
-// Схема валидации
+
 const schema = yup.object({
   usdToTmtRate: yup.string().required('Пожалуйста заполните поле'),
 })
 
-// GET DATA
+
 const fetchSettings = async () => {
   try {
     loading.value = true
@@ -64,7 +68,7 @@ const fetchSettings = async () => {
   }
 }
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -121,7 +125,7 @@ onMounted(fetchSettings)
 
 <template>
   <div class="bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl"> Настройки </span>
 
@@ -130,12 +134,12 @@ onMounted(fetchSettings)
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10 w-full max-w-5xl" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-50 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               USD TO TMT RATE <span class="text-red-600">*</span>
@@ -180,7 +184,7 @@ onMounted(fetchSettings)
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"

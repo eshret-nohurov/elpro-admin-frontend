@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * User Edit
+ * Редактирует данные пользователя и его роль в админке.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -13,22 +17,22 @@ const toast = useToast()
 const loading = ref(false)
 const id = route.params.id
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Поля
+
 const form = ref({})
 
-// Схема валидации
+
 const schema = yup.object({
   password: yup.string().min(8, 'Пароль должен содержать минимум 8 символов'),
 })
 
-// GET DATA
+
 const fetchUser = async () => {
   try {
     loading.value = true
@@ -51,7 +55,7 @@ const fetchUser = async () => {
   }
 }
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -102,7 +106,7 @@ onMounted(fetchUser)
 
 <template>
   <div class="bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Обновление пользователя
@@ -113,12 +117,12 @@ onMounted(fetchUser)
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Имя пользователя <span class="text-red-600">*</span>
@@ -138,7 +142,7 @@ onMounted(fetchUser)
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Пароль <span class="text-red-600">*</span>
@@ -157,7 +161,7 @@ onMounted(fetchUser)
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <fieldset class="space-y-3">
               <legend class="sr-only">User_role</legend>
@@ -204,7 +208,7 @@ onMounted(fetchUser)
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"

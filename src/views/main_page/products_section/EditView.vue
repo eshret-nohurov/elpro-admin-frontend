@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Product Section Edit
+ * Редактирует секцию товаров и обновляет выбранные позиции.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
@@ -15,28 +19,28 @@ const toast = useToast()
 const loading = ref(false)
 const id = route.params.id
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const isLoadingProductSearch = ref(false)
 const lastQueryProdSearch = ref('')
 const submitting = ref(false)
 const success = ref(false)
 
-// Поля
+
 const form = ref({
   position: 1,
 })
 const productSearchResult = ref([])
 const isNew = ref(false)
 
-// Схема валидации
+
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
 })
 
-// GET DATA
+
 const fetchSlide = async () => {
   try {
     loading.value = true
@@ -113,7 +117,7 @@ const handleInputChangeForProducts = async (val) => {
   }
 }
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -174,7 +178,7 @@ onMounted(fetchSlide)
 
 <template>
   <div class="bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Создание Секции товаров
@@ -185,12 +189,12 @@ onMounted(fetchSlide)
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название секции RU <span class="text-red-600">*</span>
@@ -209,7 +213,7 @@ onMounted(fetchSlide)
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> Название секции TM </label>
             <input
@@ -220,7 +224,7 @@ onMounted(fetchSlide)
             />
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> Название секции EN </label>
             <input
@@ -231,7 +235,7 @@ onMounted(fetchSlide)
             />
           </div>
 
-          <!-- input -->
+
           <div class="w-55 flex justify-center">
             <label for="Option1" class="flex items-center gap-3">
               <input
@@ -245,7 +249,7 @@ onMounted(fetchSlide)
             </label>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4" v-if="!isNew">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Продукты (максимум 8)
@@ -280,7 +284,7 @@ onMounted(fetchSlide)
             </VueMultiselect>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200"> Позиция </label>
             <input
@@ -292,7 +296,7 @@ onMounted(fetchSlide)
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"
@@ -316,7 +320,7 @@ onMounted(fetchSlide)
 </template>
 
 <style>
-/* Стили поля ввода и тегов */
+
 .multiselect__tags {
   background-color: #101828;
   border: 1px solid #6a7282;

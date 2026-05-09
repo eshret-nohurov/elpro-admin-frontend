@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Product Sections List
+ * Показывает секции товаров главной страницы и действия управления.
+ */
 import AppList from '@/components/AppList.vue'
 import AppLoader from '@/components/AppLoader.vue'
 import AppModal from '@/components/AppModal.vue'
@@ -11,14 +15,14 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// var
+
 const loading = ref(false)
 const sections = ref([])
 const isModalOpen = ref(false)
 const deleteData = ref({})
 const modalTitle = ref('')
 
-// GET DATA
+
 const fetchSections = async () => {
   try {
     loading.value = true
@@ -39,7 +43,7 @@ const fetchSections = async () => {
   }
 }
 
-// Подтверждение удаления
+
 const handleConfirm = async () => {
   try {
     isModalOpen.value = false

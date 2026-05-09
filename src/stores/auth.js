@@ -1,4 +1,8 @@
-// stores/auth.js
+/*
+ * Auth Store
+ * Сохраняет токен, пользователя и состояние авторизации для защищенных страниц.
+ */
+
 import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {

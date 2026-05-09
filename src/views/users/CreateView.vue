@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * User Create
+ * Создает пользователя админки с ролью и учетными данными.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -9,17 +13,17 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// Поля
+
 const form = ref({})
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Схема валидации
+
 const schema = yup.object({
   username: yup.string().required('Пожалуйста заполните поле'),
   password: yup
@@ -28,7 +32,7 @@ const schema = yup.object({
     .min(8, 'Пароль должен содержать минимум 8 символов'),
 })
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -77,7 +81,7 @@ const submitForm = async () => {
 
 <template>
   <div class="bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Создание пользователя
@@ -88,12 +92,12 @@ const submitForm = async () => {
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Имя пользователя <span class="text-red-600">*</span>
@@ -112,7 +116,7 @@ const submitForm = async () => {
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Пароль <span class="text-red-600">*</span>
@@ -131,7 +135,7 @@ const submitForm = async () => {
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <fieldset class="space-y-3">
               <legend class="sr-only">User_role</legend>
@@ -178,7 +182,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"

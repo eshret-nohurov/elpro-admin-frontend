@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Users List
+ * Показывает пользователей админки и действия управления доступом.
+ */
 import AppList from '@/components/AppList.vue'
 import AppLoader from '@/components/AppLoader.vue'
 import AppModal from '@/components/AppModal.vue'
@@ -11,14 +15,14 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// var
+
 const loading = ref(false)
 const users = ref([])
 const isModalOpen = ref(false)
 const deleteData = ref({})
 const modalTitle = ref('')
 
-// GET DATA
+
 const fetchUsers = async () => {
   try {
     loading.value = true
@@ -39,7 +43,7 @@ const fetchUsers = async () => {
   }
 }
 
-// Подтверждение удаления
+
 const handleConfirm = async () => {
   try {
     isModalOpen.value = false

@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Category Create
+ * Создает категорию с переводами, URL, иконкой, родителем и порядком показа.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
@@ -11,7 +15,7 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// Поля
+
 const form = ref({
   nameRU: '',
   nameTM: '',
@@ -23,26 +27,21 @@ const form = ref({
 
 const categories = ref([])
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Схема валидации
+
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
   url: yup.string().required('Пожалуйста заполните поле'),
-  /* image: yup
-    .mixed()
-    .required('Пожалуйста загрузите изображение')
-    .test('fileType', 'Только изображения разрешены', (value) => {
-      return value && value.type && value.type.startsWith('image/')
-    }), */
+
 })
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -103,7 +102,7 @@ const submitForm = async () => {
   }
 }
 
-// GET DATA
+
 const fetchCategoryForList = async () => {
   try {
     const response = await globalStore.makeApiRequest({
@@ -121,7 +120,7 @@ const fetchCategoryForList = async () => {
   }
 }
 
-// Превью изображения
+
 const previewUrl = ref(null)
 
 const handleFileUpload = (event) => {
@@ -150,7 +149,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg h-full">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Создание категории
@@ -161,12 +160,12 @@ onBeforeUnmount(() => {
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название категории RU <span class="text-red-600">*</span>
@@ -185,7 +184,7 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название категории TM
@@ -198,7 +197,7 @@ onBeforeUnmount(() => {
             />
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название категории EN
@@ -212,9 +211,9 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row mt-5">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               URL категории <span class="text-red-600">*</span>
@@ -233,7 +232,7 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
-          <!-- input for image upload -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Изображение категории
@@ -249,7 +248,7 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
-          <!-- select -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Родительская категория
@@ -276,9 +275,9 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row mt-5">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> Позиция </label>
             <input
@@ -290,7 +289,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"
@@ -322,7 +321,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
-/* Стили поля ввода и тегов */
+
 .multiselect__tags {
   background-color: #101828;
   border: 1px solid #6a7282;

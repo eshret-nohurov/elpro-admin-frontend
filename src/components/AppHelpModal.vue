@@ -29,7 +29,7 @@ const onClose = () => emit('close')
             следующим параметрам:
           </p>
 
-          <!-- Основные требования -->
+
           <div class="bg-dark-800 border-l-4 border-blue-500 p-6 rounded-lg mb-6 shadow-lg">
             <h2 class="text-xl font-semibold text-blue-300 mb-4">Основные параметры</h2>
             <ul class="space-y-3 list-disc pl-5">
@@ -51,7 +51,7 @@ const onClose = () => emit('close')
             </ul>
           </div>
 
-          <!-- PROMO BANNERS -->
+
           <div class="bg-dark-800 border-l-4 border-blue-400 px-6 pb-2 rounded-lg mb-6 shadow-lg">
             <h2 class="text-xl font-semibold text-blue-300 my-2">1-ый Промо Баннер</h2>
             <ul class="space-y-3 list-disc pl-5">

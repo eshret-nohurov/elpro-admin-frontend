@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Product Edit
+ * Загружает товар, редактирует его поля и аккуратно обновляет изображения и связи.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
@@ -7,20 +11,19 @@ import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import * as yup from 'yup'
 
-// ==== DATA ====
-// ==============
+
 const route = useRoute()
 const router = useRouter()
 const globalStore = useGlobalStore()
 const toast = useToast()
 const id = route.params.id
 
-// Состояние
+
 const loading = ref(false)
 const submitting = ref(false)
 const success = ref(false)
 
-// Поля
+
 const form = ref({
   categories: [],
 })
@@ -31,7 +34,7 @@ const specifications = ref([])
 const isLoadingProductSearch = ref(false)
 const lastQueryProdSearch = ref('')
 
-// Ошибки
+
 const errors = ref({})
 
 const toDatetimeLocal = (value) => {
@@ -44,7 +47,7 @@ const toDatetimeLocal = (value) => {
   return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16)
 }
 
-// Схема валидации
+
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
   shortDesсRU: yup.string().required('Пожалуйста заполните поле'),
@@ -53,11 +56,8 @@ const schema = yup.object({
   stock: yup.string().required('Пожалуйста заполните поле'),
   relatedProducts: yup.array().max(4, 'Можно выбрать не более 4 товаров').nullable(),
 })
-// =======================================================================================
 
-// ==== METHODS ====
-// =================
-// GET DATA
+
 const fetchCategory = async () => {
   try {
     loading.value = true
@@ -193,7 +193,7 @@ const handleSearchProduct = async (query) => {
   }, 500)
 }
 
-//! specifications
+
 const addSpecification = (
   data = {
     type: { ru: '', tm: '', en: '' },
@@ -212,47 +212,45 @@ const removeSpecification = (index) => {
   }
 }
 
-// Работа с файлами
+
 const handleFileUpload = (event) => {
   try {
     const files = event.target.files
 
-    // Проверяем, что файлы выбраны
+
     if (!files || files.length === 0) {
       form.value.images = null
       return
     }
 
-    // Преобразуем FileList в массив и фильтруем только изображения
+
     const imageFiles = Array.from(files).filter((file) => file?.type?.startsWith('image/'))
 
-    // Проверяем количество файлов
+
     if (imageFiles.length > 4) {
       alert('Можно загрузить не более 4 изображений')
-      event.target.value = '' // Сбрасываем input
+      event.target.value = ''
       form.value.images = null
       return
     }
 
-    // Проверяем, что есть хотя бы 1 изображение
+
     if (imageFiles.length === 0) {
       alert('Пожалуйста, выберите изображения')
       form.value.images = null
       return
     }
 
-    // Сохраняем файлы в form
+
     form.value.images = imageFiles
   } catch (error) {
     console.error('Ошибка загрузки файлов:', error)
     form.value.images = null
-    event.target.value = '' // Сбрасываем input
+    event.target.value = ''
   }
 }
 
-// ==== METHODS ====
-// =================
-// POST DATA
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -352,14 +350,13 @@ const submitForm = async () => {
   }
 }
 
-// =======================================================================================
 
 onMounted(fetchCategory)
 </script>
 
 <template>
   <div class="bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Создание товара
@@ -370,16 +367,16 @@ onMounted(fetchCategory)
       ></span>
     </div>
 
-    <!-- body -->
+
     <form class="mt-10" @submit.prevent="submitForm">
       <div class="flex flex-col gap-6 xl:flex-row xl:flex-wrap xl:gap-10">
-        <!-- ============================================ -->
-        <!-- SIDE 1 -->
-        <!-- ============================================ -->
+
+
+
         <div class="max-w-full">
-          <!-- Строка inputs -->
+
           <div class="flex flex-wrap flex-row">
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Название товара RU <span class="text-red-600">*</span>
@@ -398,7 +395,7 @@ onMounted(fetchCategory)
               </p>
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Название товара TM
@@ -411,7 +408,7 @@ onMounted(fetchCategory)
               />
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Название товара EN
@@ -425,9 +422,9 @@ onMounted(fetchCategory)
             </div>
           </div>
 
-          <!-- Строка inputs -->
+
           <div class="flex flex-wrap flex-row">
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Короткое описание RU <span class="text-red-600">*</span>
@@ -445,7 +442,7 @@ onMounted(fetchCategory)
               </p>
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Короткое описание TM
@@ -457,7 +454,7 @@ onMounted(fetchCategory)
               ></textarea>
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Короткое описание EN
@@ -470,9 +467,9 @@ onMounted(fetchCategory)
             </div>
           </div>
 
-          <!-- Строка inputs -->
+
           <div class="flex flex-wrap flex-row">
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Полное описание RU <span class="text-red-600">*</span>
@@ -490,7 +487,7 @@ onMounted(fetchCategory)
               </p>
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Полное описание TM
@@ -502,7 +499,7 @@ onMounted(fetchCategory)
               ></textarea>
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Полное описание EN
@@ -515,9 +512,9 @@ onMounted(fetchCategory)
             </div>
           </div>
 
-          <!-- Строка inputs -->
+
           <div class="flex flex-wrap flex-row">
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Цена <span class="text-red-600">*</span>
@@ -535,7 +532,7 @@ onMounted(fetchCategory)
               </p>
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Количество <span class="text-red-600">*</span>
@@ -585,7 +582,7 @@ onMounted(fetchCategory)
               </p>
             </div>
 
-            <!-- input for image upload -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Изображение товара <span class="text-red-600">*</span>
@@ -604,9 +601,9 @@ onMounted(fetchCategory)
             </div>
           </div>
 
-          <!-- Строка inputs -->
+
           <div class="flex flex-wrap flex-row">
-            <!-- select -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Категории <span class="text-red-600">*</span>
@@ -635,7 +632,7 @@ onMounted(fetchCategory)
               </p>
             </div>
 
-            <!-- input -->
+
             <div class="w-65 mb-4 mr-4">
               <label class="block text-sm font-medium text-gray-200 mb-2">
                 Связанные продукты (максимум 4)
@@ -675,9 +672,9 @@ onMounted(fetchCategory)
           </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- SIDE 2 -->
-        <!-- ============================================ -->
+
+
+
         <div class="w-full min-w-0 xl:min-w-[50rem]">
           <div class="mb-6">
             <div class="flex items-center justify-between mb-5">
@@ -709,7 +706,7 @@ onMounted(fetchCategory)
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Тип характеристики -->
+
                 <div>
                   <label class="block text-sm font-medium text-gray-300 mb-1">
                     Тип (RU)
@@ -723,7 +720,7 @@ onMounted(fetchCategory)
                   />
                 </div>
 
-                <!-- Значение характеристики -->
+
                 <div>
                   <label class="block text-sm font-medium text-gray-300 mb-1">
                     Значение (RU)
@@ -737,7 +734,7 @@ onMounted(fetchCategory)
                   />
                 </div>
 
-                <!-- Тип характеристики -->
+
                 <div>
                   <label class="block text-sm font-medium text-gray-300 mb-1">Тип (TM)</label>
                   <input
@@ -747,7 +744,7 @@ onMounted(fetchCategory)
                   />
                 </div>
 
-                <!-- Значение характеристики -->
+
                 <div>
                   <label class="block text-sm font-medium text-gray-300 mb-1">Значение (TM)</label>
                   <input
@@ -757,7 +754,7 @@ onMounted(fetchCategory)
                   />
                 </div>
 
-                <!-- Тип характеристики -->
+
                 <div>
                   <label class="block text-sm font-medium text-gray-300 mb-1">Тип (EN)</label>
                   <input
@@ -767,7 +764,7 @@ onMounted(fetchCategory)
                   />
                 </div>
 
-                <!-- Значение характеристики -->
+
                 <div>
                   <label class="block text-sm font-medium text-gray-300 mb-1">Значение (EN)</label>
                   <input
@@ -782,7 +779,7 @@ onMounted(fetchCategory)
         </div>
       </div>
 
-      <!-- Строка BUTTONS -->
+
       <div class="flex flex-wrap flex-row mt-5">
         <button
           type="submit"
@@ -805,7 +802,7 @@ onMounted(fetchCategory)
 </template>
 
 <style>
-/* Стили поля ввода и тегов */
+
 .multiselect__tags {
   background-color: #101828;
   border: 1px solid #6a7282;

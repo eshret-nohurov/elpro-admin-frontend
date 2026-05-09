@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Order Form
+ * Создает и редактирует заказы из админки, пересчитывает доставку и показывает скидки товаров.
+ */
 import AppLoader from '@/components/AppLoader.vue'
 import { useGlobalStore } from '@/stores/global'
 import { computed, onMounted, ref } from 'vue'

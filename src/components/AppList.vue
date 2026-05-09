@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * List Shell
+ * Дает общий каркас спискам с пагинацией, загрузкой и единым поведением таблиц.
+ */
 import AppEmpty from '@/components/AppEmpty.vue'
 import AppPagination from '@/components/AppPagination.vue'
 import { computed } from 'vue'
@@ -48,7 +52,7 @@ const props = defineProps({
 
 const emit = defineEmits(['deleteData', 'prevPage', 'nextPage', 'pageChange'])
 
-// Добавляем обработчики для пагинации
+
 const prevPage = () => {
   emit('prevPage')
 }

@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Category Edit
+ * Редактирует категорию и сохраняет связи дерева без ручного изменения структуры.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
@@ -15,14 +19,14 @@ const toast = useToast()
 const loading = ref(false)
 const id = route.params.id
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Поля
+
 const form = ref({
   nameRU: '',
   nameTM: '',
@@ -34,13 +38,13 @@ const form = ref({
 
 const categories = ref([])
 
-// Схема валидации
+
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
   url: yup.string().required('Пожалуйста заполните поле'),
 })
 
-// GET DATA
+
 const fetchCategory = async () => {
   try {
     loading.value = true
@@ -94,7 +98,7 @@ const fetchCategoryForList = async () => {
   }
 }
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -155,7 +159,7 @@ const submitForm = async () => {
   }
 }
 
-// Превью изображения
+
 const previewUrl = ref(null)
 
 const handleFileUpload = (event) => {
@@ -185,7 +189,7 @@ onMounted(fetchCategoryForList)
 
 <template>
   <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg h-full">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Редактирование категории
@@ -196,12 +200,12 @@ onMounted(fetchCategoryForList)
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название категории RU <span class="text-red-600">*</span>
@@ -220,7 +224,7 @@ onMounted(fetchCategoryForList)
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название категории TM
@@ -233,7 +237,7 @@ onMounted(fetchCategoryForList)
             />
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название категории EN
@@ -247,9 +251,9 @@ onMounted(fetchCategoryForList)
           </div>
         </div>
 
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row mt-5">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               URL категории <span class="text-red-600">*</span>
@@ -268,7 +272,7 @@ onMounted(fetchCategoryForList)
             </p>
           </div>
 
-          <!-- input for image upload -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Изображение категории
@@ -284,7 +288,7 @@ onMounted(fetchCategoryForList)
             </p>
           </div>
 
-          <!-- select -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Родительская категория
@@ -311,9 +315,9 @@ onMounted(fetchCategoryForList)
           </div>
         </div>
 
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row mt-5">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> Позиция </label>
             <input
@@ -325,7 +329,7 @@ onMounted(fetchCategoryForList)
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"
@@ -365,7 +369,7 @@ onMounted(fetchCategoryForList)
 </template>
 
 <style>
-/* Стили поля ввода и тегов */
+
 .multiselect__tags {
   background-color: #101828;
   border: 1px solid #6a7282;

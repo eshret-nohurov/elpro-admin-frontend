@@ -27,5 +27,21 @@ coverage
 *.sln
 *.sw?
 .env
+.env.*
+!.env.example
 
 *.tsbuildinfo
+
+# Local dumps and backups
+backups/
+backup/
+dumps/
+dump/
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.zip
+*.sql
+*.bson
+*.archive

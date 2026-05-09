@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Audit Logs
+ * Показывает журнал действий пользователей и фильтрует записи по пользователю, разделу и действию.
+ */
 import AppEmpty from '@/components/AppEmpty.vue'
 import AppLoader from '@/components/AppLoader.vue'
 import AppPagination from '@/components/AppPagination.vue'

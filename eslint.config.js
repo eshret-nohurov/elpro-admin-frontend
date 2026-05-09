@@ -1,3 +1,7 @@
+/*
+ * ESLint Config
+ * Настраивает проверку Vue и JavaScript файлов без служебных директорий сборки.
+ */
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
 import js from '@eslint/js'

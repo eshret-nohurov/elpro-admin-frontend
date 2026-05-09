@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Subcategory Edit
+ * Редактирует подкатегорию и сохраняет связь с родительской категорией.
+ */
 import { useGlobalStore } from '@/stores/global'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -13,25 +17,25 @@ const toast = useToast()
 const loading = ref(false)
 const id = route.params.id
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Поля
+
 const form = ref({})
 const categories = ref([])
 
-// Схема валидации
+
 const schema = yup.object({
   nameRU: yup.string().required('Пожалуйста заполните поле'),
   url: yup.string().required('Пожалуйста заполните поле'),
   category: yup.string().required('Пожалуйста выберите категорию'),
 })
 
-// GET DATA
+
 const fetchSubCategory = async () => {
   try {
     loading.value = true
@@ -83,7 +87,7 @@ const fetchCategoryForSubcategory = async () => {
   }
 }
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -143,7 +147,7 @@ const submitForm = async () => {
   }
 }
 
-// Превью изображения
+
 const previewUrl = ref(null)
 
 const handleFileUpload = (event) => {
@@ -173,7 +177,7 @@ onMounted(fetchCategoryForSubcategory)
 
 <template>
   <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Редактирование категории
@@ -184,12 +188,12 @@ onMounted(fetchCategoryForSubcategory)
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название подкатегории RU <span class="text-red-600">*</span>
@@ -208,7 +212,7 @@ onMounted(fetchCategoryForSubcategory)
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название подкатегории TM
@@ -221,7 +225,7 @@ onMounted(fetchCategoryForSubcategory)
             />
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название подкатегории EN
@@ -235,9 +239,9 @@ onMounted(fetchCategoryForSubcategory)
           </div>
         </div>
 
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row mt-5">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               URL подкатегории <span class="text-red-600">*</span>
@@ -256,7 +260,7 @@ onMounted(fetchCategoryForSubcategory)
             </p>
           </div>
 
-          <!-- select -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Категория <span class="text-red-600">*</span>
@@ -277,7 +281,7 @@ onMounted(fetchCategoryForSubcategory)
             </p>
           </div>
 
-          <!-- input for image upload -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Изображение подкатегории
@@ -294,7 +298,7 @@ onMounted(fetchCategoryForSubcategory)
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"

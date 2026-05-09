@@ -1,4 +1,8 @@
 <script setup>
+/*
+ * Main Banner Create
+ * Создает слайд главного баннера с переводами, ссылкой и изображением.
+ */
 import AppHelpModal from '@/components/AppHelpModal.vue'
 import { useGlobalStore } from '@/stores/global'
 import { onBeforeUnmount, ref } from 'vue'
@@ -10,7 +14,7 @@ const toast = useToast()
 const router = useRouter()
 const globalStore = useGlobalStore()
 
-// Поля
+
 const form = ref({
   name: '',
   url: '',
@@ -18,14 +22,14 @@ const form = ref({
 })
 const isModalOpen = ref(false)
 
-// Ошибки
+
 const errors = ref({})
 
-// Состояние
+
 const submitting = ref(false)
 const success = ref(false)
 
-// Схема валидации
+
 const schema = yup.object({
   name: yup.string().required('Пожалуйста заполните поле'),
   image: yup
@@ -36,7 +40,7 @@ const schema = yup.object({
     }),
 })
 
-// Отправка формы
+
 const submitForm = async () => {
   errors.value = {}
 
@@ -85,7 +89,7 @@ const submitForm = async () => {
   }
 }
 
-// Превью изображения
+
 const previewUrl = ref(null)
 
 const handleFileUpload = (event) => {
@@ -114,7 +118,7 @@ onBeforeUnmount(() => {
   <AppHelpModal v-model:isOpen="isModalOpen" @close="isModalOpen = false" />
 
   <div class="bg-gray-900 p-4 rounded-lg">
-    <!-- head -->
+
     <div class="flex items-center mt-2">
       <span class="shrink-0 pe-4 text-gray-900 dark:text-white black text-xl">
         Создание слайда главного баннера
@@ -125,12 +129,12 @@ onBeforeUnmount(() => {
       ></span>
     </div>
 
-    <!-- body -->
+
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
-        <!-- Строка inputs -->
+
         <div class="flex flex-wrap flex-row">
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2">
               Название слайда<span class="text-red-600">*</span>
@@ -149,7 +153,7 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
-          <!-- input -->
+
           <div class="w-65 mb-4 mr-4">
             <label class="block text-sm font-medium text-gray-200 mb-2"> URL </label>
             <input
@@ -160,7 +164,7 @@ onBeforeUnmount(() => {
             />
           </div>
 
-          <!-- input for image upload -->
+
           <div class="w-65 mb-4 mr-4">
             <div>
               <label class="flex text-sm font-medium text-gray-200 mb-2">
@@ -185,7 +189,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- Строка BUTTONS -->
+
         <div class="flex flex-wrap flex-row mt-5">
           <button
             type="submit"
