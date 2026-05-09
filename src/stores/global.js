@@ -161,8 +161,9 @@ export const useGlobalStore = defineStore('global', {
       }
 
 
-      toast.error(error.response.data.error)
-      console.error('API Error:', error.response.data.error)
+      const message = error.response?.data?.error || error.response?.data?.message || this.error
+      toast.error(message || 'Произошла ошибка')
+      console.error('API Error:', message)
     },
 
     clearError() {
