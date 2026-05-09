@@ -16,7 +16,6 @@ export const useGlobalStore = defineStore('global', {
       baseURL: import.meta.env.VITE_API_URL,
       endpoints: {
         login: '/auth/login',
-        captcha: '/auth/captcha',
         dashboard: '/dashboard',
         logs: '/logs',
         log_users: '/logs/users',
@@ -162,9 +161,8 @@ export const useGlobalStore = defineStore('global', {
       }
 
 
-      const message = error.response?.data?.error || error.response?.data?.message || this.error
-      toast.error(message || 'Произошла ошибка')
-      console.error('API Error:', message)
+      toast.error(error.response.data.error)
+      console.error('API Error:', error.response.data.error)
     },
 
     clearError() {
