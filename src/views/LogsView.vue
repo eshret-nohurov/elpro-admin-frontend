@@ -34,18 +34,21 @@ const actionOptions = [
   { value: 'create', label: 'Создание' },
   { value: 'update', label: 'Редактирование' },
   { value: 'delete', label: 'Удаление' },
+  { value: 'error', label: 'Ошибки' },
 ]
 
 const actionLabels = {
   create: 'Создание',
   update: 'Редактирование',
   delete: 'Удаление',
+  error: 'Ошибка',
 }
 
 const actionClasses = {
   create: 'bg-emerald-500/15 text-emerald-300 ring-emerald-400/30',
   update: 'bg-sky-500/15 text-sky-300 ring-sky-400/30',
   delete: 'bg-red-500/15 text-red-300 ring-red-400/30',
+  error: 'bg-rose-500/15 text-rose-300 ring-rose-400/30',
 }
 
 const formatDate = (date) =>
@@ -199,6 +202,24 @@ onMounted(() => {
             </div>
             <p class="mt-3 break-words text-sm text-slate-100">{{ log.description }}</p>
             <p v-if="log.entityName" class="mt-1 text-xs text-slate-500">{{ log.entityName }}</p>
+            <div
+              v-if="log.action === 'error' && log.meta"
+              class="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/5 p-3 text-xs text-rose-100"
+            >
+              <p v-if="log.meta.statusCode">
+                <span class="text-rose-300">Статус:</span> {{ log.meta.statusCode }}
+              </p>
+              <p v-if="log.meta.method || log.meta.path" class="mt-1 break-words">
+                <span class="text-rose-300">Запрос:</span> {{ log.meta.method }} {{ log.meta.path }}
+              </p>
+              <p v-if="log.meta.error?.message" class="mt-1 break-words">
+                <span class="text-rose-300">Сообщение:</span> {{ log.meta.error.message }}
+              </p>
+              <details class="mt-2">
+                <summary class="cursor-pointer text-rose-300">Технические детали</summary>
+                <pre class="mt-2 max-h-56 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-gray-950 p-3 text-[11px] text-slate-300">{{ JSON.stringify(log.meta, null, 2) }}</pre>
+              </details>
+            </div>
           </div>
 
           <p class="text-sm text-slate-400 lg:text-right">{{ formatDate(log.createdAt) }}</p>

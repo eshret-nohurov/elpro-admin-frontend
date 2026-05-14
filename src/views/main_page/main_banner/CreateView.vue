@@ -19,6 +19,7 @@ const form = ref({
   name: '',
   url: '',
   image: null,
+  mobileImage: null,
 })
 const isModalOpen = ref(false)
 
@@ -34,7 +35,13 @@ const schema = yup.object({
   name: yup.string().required('Пожалуйста заполните поле'),
   image: yup
     .mixed()
-    .required('Пожалуйста загрузите изображение')
+    .required('Пожалуйста загрузите desktop изображение')
+    .test('fileType', 'Только изображения разрешены', (value) => {
+      return value && value.type && value.type.startsWith('image/')
+    }),
+  mobileImage: yup
+    .mixed()
+    .required('Пожалуйста загрузите mobile/tablet изображение')
     .test('fileType', 'Только изображения разрешены', (value) => {
       return value && value.type && value.type.startsWith('image/')
     }),
@@ -61,6 +68,7 @@ const submitForm = async () => {
     formData.append('name', form.value.name)
     formData.append('url', form.value.url)
     formData.append('image', form.value.image)
+    formData.append('mobileImage', form.value.mobileImage)
 
     await globalStore.makeApiRequest({
       method: 'POST',
@@ -78,6 +86,7 @@ const submitForm = async () => {
       name: '',
       url: '',
       image: null,
+      mobileImage: null,
     }
   } catch (e) {
     console.error('Created slide failed:', e)
@@ -91,25 +100,33 @@ const submitForm = async () => {
 
 
 const previewUrl = ref(null)
+const mobilePreviewUrl = ref(null)
 
-const handleFileUpload = (event) => {
-  if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
+const handleFileUpload = (event, field, previewRef) => {
+  if (previewRef.value) {
+    URL.revokeObjectURL(previewRef.value)
   }
 
   const file = event.target.files[0]
   if (file && file.type.startsWith('image/')) {
-    previewUrl.value = URL.createObjectURL(file)
-    form.value.image = event.target.files[0]
+    previewRef.value = URL.createObjectURL(file)
+    form.value[field] = file
   } else {
-    previewUrl.value = null
-    form.value.image = null
+    previewRef.value = null
+    form.value[field] = null
   }
 }
+
+const handleDesktopUpload = event => handleFileUpload(event, 'image', previewUrl)
+const handleMobileUpload = event => handleFileUpload(event, 'mobileImage', mobilePreviewUrl)
 
 onBeforeUnmount(() => {
   if (previewUrl.value) {
     URL.revokeObjectURL(previewUrl.value)
+  }
+
+  if (mobilePreviewUrl.value) {
+    URL.revokeObjectURL(mobilePreviewUrl.value)
   }
 })
 </script>
@@ -165,10 +182,10 @@ onBeforeUnmount(() => {
           </div>
 
 
-          <div class="w-65 mb-4 mr-4">
+          <div class="w-80 mb-4 mr-4">
             <div>
               <label class="flex text-sm font-medium text-gray-200 mb-2">
-                Изображение <span class="text-red-600 ml-1">*</span>
+                Desktop изображение 21:9 <span class="text-red-600 ml-1">*</span>
                 <div
                   class="ml-2 w-4 h-4 bg-indigo-600 rounded-4xl text-center text-xs cursor-pointer"
                   @click="isModalOpen = true"
@@ -180,11 +197,38 @@ onBeforeUnmount(() => {
             <input
               type="file"
               accept="image/*"
-              @change="handleFileUpload"
+              @change="handleDesktopUpload"
               class="mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2 bg-gray-800 cursor-pointer"
             />
+            <p class="mt-2 text-xs leading-5 text-blue-200">
+              Для компьютеров: 21:9. Рекомендуем 2560x1080 px или 2100x900 px.
+            </p>
             <p v-if="errors.image" class="text-red-600 text-sm">
               {{ errors.image }}
+            </p>
+          </div>
+
+          <div class="w-80 mb-4 mr-4">
+            <label class="flex text-sm font-medium text-gray-200 mb-2">
+              Телефон/планшет изображение 16:9 <span class="text-red-600 ml-1">*</span>
+              <div
+                class="ml-2 w-4 h-4 bg-indigo-600 rounded-4xl text-center text-xs cursor-pointer"
+                @click="isModalOpen = true"
+              >
+                ?
+              </div>
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              @change="handleMobileUpload"
+              class="mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2 bg-gray-800 cursor-pointer"
+            />
+            <p class="mt-2 text-xs leading-5 text-blue-200">
+              Для телефонов и планшетов: 16:9. Рекомендуем 1920x1080 px или 1280x720 px.
+            </p>
+            <p v-if="errors.mobileImage" class="text-red-600 text-sm">
+              {{ errors.mobileImage }}
             </p>
           </div>
         </div>
@@ -209,12 +253,24 @@ onBeforeUnmount(() => {
         </div>
       </form>
 
-      <div v-if="previewUrl" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
-        <img
-          :src="previewUrl"
-          alt="Превью изображения"
-          class="rounded border border-gray-700 w-full h-full object-cover object-center"
-        />
+      <div class="mt-4 grid w-full gap-5 sm:ml-10 lg:max-w-xl">
+        <div v-if="previewUrl" class="overflow-hidden">
+          <p class="mb-2 text-sm text-gray-300">Desktop preview 21:9</p>
+          <img
+            :src="previewUrl"
+            alt="Desktop preview"
+            class="aspect-[21/9] w-full rounded border border-gray-700 object-cover object-center"
+          />
+        </div>
+
+        <div v-if="mobilePreviewUrl" class="overflow-hidden">
+          <p class="mb-2 text-sm text-gray-300">Mobile/tablet preview 16:9</p>
+          <img
+            :src="mobilePreviewUrl"
+            alt="Mobile/tablet preview"
+            class="aspect-[16/9] w-full rounded border border-gray-700 object-cover object-center"
+          />
+        </div>
       </div>
     </div>
   </div>

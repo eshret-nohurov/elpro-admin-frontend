@@ -22,10 +22,18 @@ const errors = ref({})
 
 const submitting = ref(false)
 const success = ref(false)
+const protectedUsername = 'eshret'
 
 
 const schema = yup.object({
-  username: yup.string().required('Пожалуйста заполните поле'),
+  username: yup
+    .string()
+    .required('Пожалуйста заполните поле')
+    .test(
+      'not-protected-user',
+      'Пользователя eshret можно создать только вручную на сервере',
+      (value) => value?.trim().toLowerCase() !== protectedUsername,
+    ),
   password: yup
     .string()
     .required('Пожалуйста заполните поле')
@@ -70,8 +78,10 @@ const submitForm = async () => {
     form.value = {}
   } catch (e) {
     console.error('Created user failed:', e)
-    if (e.response.status === 401) {
+    if (e.response?.status === 401) {
       router.push('/auth/login')
+    } else {
+      toast.error(e.response?.data?.error || e.response?.data?.message || 'Не удалось создать пользователя')
     }
   } finally {
     submitting.value = false

@@ -67,10 +67,14 @@ const handleConfirm = async () => {
 }
 
 const deleteDataButt = (data) => {
+  if (!canManageUser(data)) return
+
   deleteData.value = data
   modalTitle.value = `Удалить "${data.username}"?`
   isModalOpen.value = true
 }
+
+const canManageUser = (user) => user.username !== 'eshret'
 
 onMounted(fetchUsers)
 </script>
@@ -91,6 +95,8 @@ onMounted(fetchUsers)
     addButtName="Add User"
     addButtRoute="/users/create"
     editButtRoute="/users/edit"
+    :canEditItem="canManageUser"
+    :canDeleteItem="canManageUser"
     @deleteData="deleteDataButt"
   />
 

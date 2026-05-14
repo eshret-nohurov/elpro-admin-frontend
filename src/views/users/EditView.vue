@@ -4,7 +4,7 @@
  * Редактирует данные пользователя и его роль в админке.
  */
 import { useGlobalStore } from '@/stores/global'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import * as yup from 'yup'
@@ -26,6 +26,7 @@ const success = ref(false)
 
 
 const form = ref({})
+const isProtectedUser = computed(() => form.value.username === 'eshret')
 
 
 const schema = yup.object({
@@ -59,6 +60,11 @@ const fetchUser = async () => {
 const submitForm = async () => {
   errors.value = {}
 
+  if (isProtectedUser.value) {
+    toast.error('Пользователя eshret нельзя редактировать')
+    return
+  }
+
   try {
     await schema.validate(form.value, { abortEarly: false })
   } catch (err) {
@@ -74,9 +80,9 @@ const submitForm = async () => {
   try {
     const data = {
       username: form.value.username,
-      newPassword: form.value.password,
       role: form.value.role,
     }
+    data.newPassword = form.value.password
 
     await globalStore.makeApiRequest({
       method: 'POST',
@@ -88,7 +94,7 @@ const submitForm = async () => {
     })
 
     success.value = true
-    toast.success('Пользователь успешно обновлена!')
+    toast.success('Пользователь успешно обновлен!')
     router.back()
     form.value = {}
   } catch (e) {
@@ -120,6 +126,12 @@ onMounted(fetchUser)
 
     <div class="flex">
       <form class="mt-10" @submit.prevent="submitForm">
+        <div
+          v-if="isProtectedUser"
+          class="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
+        >
+          Пользователь eshret защищен: его нельзя редактировать, менять пароль или удалять.
+        </div>
 
         <div class="flex flex-wrap flex-row">
 
@@ -150,12 +162,16 @@ onMounted(fetchUser)
             <input
               v-model="form.password"
               type="text"
+              :disabled="isProtectedUser"
               :class="[
                 'mt-2 w-full rounded border border-gray-500 focus:border-indigo-600 focus:outline-none shadow-sm text-sm text-white p-2',
                 errors.password ? 'border-red-600' : '',
               ]"
-              placeholder="Введите Пароль"
+              :placeholder="isProtectedUser ? 'Пароль пользователя eshret защищен' : 'Введите Пароль'"
             />
+            <p v-if="isProtectedUser" class="mt-1 text-xs text-amber-300">
+              Пользователя eshret нельзя редактировать.
+            </p>
             <p v-if="errors.password" class="text-red-600 text-sm mt-1 px-1">
               {{ errors.password }}
             </p>
@@ -180,6 +196,7 @@ onMounted(fetchUser)
                     v-model="form.role"
                     value="admin"
                     id="admin"
+                    :disabled="isProtectedUser"
                     class="size-5 border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:ring-offset-gray-900 dark:checked:bg-blue-600"
                     checked
                   />
@@ -200,6 +217,7 @@ onMounted(fetchUser)
                     v-model="form.role"
                     value="seller"
                     id="seller"
+                    :disabled="isProtectedUser"
                     class="size-5 border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:ring-offset-gray-900 dark:checked:bg-blue-600"
                   />
                 </label>
@@ -213,7 +231,7 @@ onMounted(fetchUser)
           <button
             type="submit"
             class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition-colors cursor-pointer"
-            :disabled="submitting"
+            :disabled="submitting || isProtectedUser"
           >
             {{ submitting ? 'Отправка...' : 'Обновления пользователя' }}
           </button>

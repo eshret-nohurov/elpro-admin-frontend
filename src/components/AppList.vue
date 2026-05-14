@@ -48,6 +48,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  canDeleteItem: {
+    type: Function,
+    default: () => true,
+  },
+  canEditItem: {
+    type: Function,
+    default: () => true,
+  },
 })
 
 const emit = defineEmits(['deleteData', 'prevPage', 'nextPage', 'pageChange'])
@@ -106,12 +114,14 @@ const startIndex = computed(() => {
           <span class="text-xs uppercase tracking-wide text-gray-400">#{{ startIndex + index + 1 }}</span>
           <div class="flex gap-2">
             <RouterLink
+              v-if="props.canEditItem(item)"
               class="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white"
               :to="props.editButtRoute + '/' + item._id"
             >
               Edit
             </RouterLink>
             <button
+              v-if="props.canDeleteItem(item)"
               @click="emit('deleteData', item)"
               class="rounded-lg bg-red-500 px-3 py-2 text-xs font-semibold text-white"
             >
@@ -164,6 +174,7 @@ const startIndex = computed(() => {
           </td>
           <td class="px-1 whitespace-nowrap text-center w-20">
             <RouterLink
+              v-if="props.canEditItem(item)"
               class="bg-indigo-600 hover:bg-indigo-700 h-10 flex items-center justify-center"
               :to="props.editButtRoute + '/' + item._id"
             >
@@ -172,6 +183,7 @@ const startIndex = computed(() => {
           </td>
           <td class="px-1 whitespace-nowrap text-center w-20">
             <button
+              v-if="props.canDeleteItem(item)"
               @click="emit('deleteData', item)"
               class="bg-red-500 hover:bg-red-600 h-10 flex items-center justify-center w-full cursor-pointer"
             >

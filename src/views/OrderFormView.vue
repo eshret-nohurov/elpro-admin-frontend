@@ -21,6 +21,7 @@ const productSearch = ref('')
 const productSearchResults = ref([])
 const isProductSearchLoading = ref(false)
 const deliveryPrices = ref({})
+const usdToTmtRate = ref(0)
 const orderMeta = ref({
   createdAt: null,
   updatedAt: null,
@@ -69,6 +70,21 @@ const deliveryPrice = computed(() => {
 const totalPrice = computed(() => subtotalPrice.value + deliveryPrice.value)
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString('ru-RU')} тмт`
+const formatUsd = (value) => `$${Number(value || 0).toLocaleString('en-US', {
+  maximumFractionDigits: 2,
+})}`
+const formatPriceWithUsd = (value) => {
+  const tmtValue = Number(value || 0)
+  const rate = Number(usdToTmtRate.value || 0)
+
+  if (!rate) return formatPrice(tmtValue)
+
+  return `${formatPrice(tmtValue)} (${formatUsd(tmtValue / rate)})`
+}
+const productUsdToTmt = (value) => {
+  const rate = Number(usdToTmtRate.value || 0)
+  return Number(value || 0) * (rate || 1)
+}
 const originalPrice = (product) => Number(product.originalPrice || product.price || 0)
 const productDiscountTotal = (product) =>
   product.hasDiscount
@@ -110,6 +126,7 @@ const fetchSettings = async () => {
       url: globalStore.api.endpoints.settings,
     })
     deliveryPrices.value = response.data?.[0]?.deliveryPrices || {}
+    usdToTmtRate.value = Number(response.data?.[0]?.usdToTmtRate || 0)
   } catch (e) {
     console.error('fetchSettings failed:', e)
   }
@@ -198,8 +215,8 @@ const addProduct = (product) => {
       _id: product.id,
       name: product.name,
       quantity: 1,
-      price: Number(product.price || 0),
-      originalPrice: product.originalPrice || product.price,
+      price: productUsdToTmt(product.price),
+      originalPrice: productUsdToTmt(product.originalPrice || product.price),
       hasDiscount: Boolean(product.hasDiscount),
       discountPercent: product.discountPercent || 0,
       discountExpiresAt: product.discountExpiresAt || null,
@@ -410,15 +427,15 @@ onMounted(() => {
               <span class="block font-semibold">{{ product.name }}</span>
               <span class="mt-1 block text-xs text-slate-400">
                 <template v-if="product.hasDiscount">
-                  <span class="font-bold text-red-300">{{ formatPrice(product.price) }}</span>
-                  <span class="line-through">{{ formatPrice(product.originalPrice) }}</span>
+                  <span class="font-bold text-red-300">{{ formatPriceWithUsd(productUsdToTmt(product.price)) }}</span>
+                  <span class="line-through">{{ formatPriceWithUsd(productUsdToTmt(product.originalPrice)) }}</span>
                   <span class="text-red-300">-{{ product.discountPercent }}%</span>
                   <span v-if="product.discountExpiresAt" class="block pt-1 text-red-200">
                     до {{ formatDiscountDate(product.discountExpiresAt) }}
                   </span>
                   ·
                 </template>
-                <template v-else>{{ formatPrice(product.price) }} ·</template>
+                <template v-else>{{ formatPriceWithUsd(productUsdToTmt(product.price)) }} ·</template>
                 остаток: {{ product.stock ?? 0 }}
               </span>
             </button>
@@ -484,18 +501,18 @@ onMounted(() => {
               class="mt-3 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-200 ring-1 ring-red-400/20"
             >
               Товар со скидкой -{{ product.discountPercent }}%:
-              <span class="line-through">{{ formatPrice(originalPrice(product)) }}</span>
-              → <span class="font-bold">{{ formatPrice(product.price) }}</span>
+              <span class="line-through">{{ formatPriceWithUsd(originalPrice(product)) }}</span>
+              → <span class="font-bold">{{ formatPriceWithUsd(product.price) }}</span>
               <span v-if="product.discountExpiresAt" class="mt-1 block text-red-100">
                 Скидка действует до {{ formatDiscountDate(product.discountExpiresAt) }}
               </span>
               <span v-if="product.quantity > 1">
-                , экономия {{ formatPrice(productDiscountTotal(product)) }}
+                , экономия {{ formatPriceWithUsd(productDiscountTotal(product)) }}
               </span>
             </div>
 
             <p class="mt-3 text-right text-sm font-bold text-sky-300">
-              {{ formatPrice(product.price * product.quantity) }}
+              {{ formatPriceWithUsd(product.price * product.quantity) }}
             </p>
           </article>
         </div>
@@ -517,19 +534,19 @@ onMounted(() => {
                   </span>
                 </span>
               </span>
-              <span class="font-semibold">{{ formatPrice(product.price * product.quantity) }}</span>
+              <span class="font-semibold">{{ formatPriceWithUsd(product.price * product.quantity) }}</span>
             </div>
             <div class="flex justify-between gap-3 border-t border-slate-800 pt-2">
               <span class="text-slate-500">Товары</span>
-              <span>{{ formatPrice(subtotalPrice) }}</span>
+              <span>{{ formatPriceWithUsd(subtotalPrice) }}</span>
             </div>
             <div class="flex justify-between gap-3">
               <span class="text-slate-500">Доставка</span>
-              <span>{{ deliveryPrice > 0 ? formatPrice(deliveryPrice) : 'Бесплатно' }}</span>
+              <span>{{ deliveryPrice > 0 ? formatPriceWithUsd(deliveryPrice) : 'Бесплатно' }}</span>
             </div>
           </div>
           <p class="mt-3 border-t border-slate-800 pt-3 text-2xl font-black">
-            {{ formatPrice(totalPrice) }}
+            {{ formatPriceWithUsd(totalPrice) }}
           </p>
         </div>
 

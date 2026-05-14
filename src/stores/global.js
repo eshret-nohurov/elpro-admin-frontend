@@ -10,6 +10,68 @@ import { useToast } from 'vue-toastification'
 const toast = useToast()
 const authStore = useAuthStore()
 
+const statusMessages = {
+  400: 'Проверьте заполненные поля. В данных есть ошибка.',
+  401: 'Сессия закончилась. Войдите в админку заново.',
+  403: 'У вас нет прав для этого действия.',
+  404: 'Запись не найдена. Возможно, ее уже удалили.',
+  409: 'Конфликт данных. Обновите страницу и попробуйте еще раз.',
+  413: 'Файл слишком большой. Загрузите файл меньшего размера.',
+  422: 'Не удалось сохранить: проверьте обязательные поля.',
+  429: 'Слишком много попыток. Подождите немного и попробуйте снова.',
+  500: 'На сервере произошла ошибка. Сообщите администратору.',
+  502: 'Сервер временно недоступен. Попробуйте позже.',
+  503: 'Сервис временно недоступен. Попробуйте позже.',
+}
+
+const technicalMessageMap = [
+  {
+    test: /Network Error|ERR_NETWORK/i,
+    message: 'Нет связи с сервером. Проверьте интернет или доступность сервера.',
+  },
+  {
+    test: /timeout/i,
+    message: 'Сервер долго не отвечает. Попробуйте еще раз.',
+  },
+  {
+    test: /jwt expired|token expired/i,
+    message: 'Сессия закончилась. Войдите в админку заново.',
+  },
+  {
+    test: /invalid token|jwt malformed|access denied/i,
+    message: 'Нужно снова войти в админку.',
+  },
+  {
+    test: /Cast to ObjectId failed|CastError/i,
+    message: 'Некорректный идентификатор записи. Обновите страницу и попробуйте снова.',
+  },
+  {
+    test: /validation failed|ValidationError/i,
+    message: 'Проверьте заполненные поля. Некоторые данные указаны неверно.',
+  },
+  {
+    test: /E11000|duplicate key/i,
+    message: 'Такая запись уже существует.',
+  },
+  {
+    test: /Cannot read properties|undefined|null/i,
+    message: 'Не хватает данных для выполнения действия. Обновите страницу и попробуйте снова.',
+  },
+]
+
+const getReadableErrorMessage = (error) => {
+  const serverMessage = error.response?.data?.error || error.response?.data?.message || error.response?.data?.details
+  const rawMessage = String(serverMessage || error.message || '')
+  const mappedMessage = technicalMessageMap.find((item) => item.test.test(rawMessage))?.message
+
+  if (mappedMessage) return mappedMessage
+  if (serverMessage) return serverMessage
+  if (error.response?.status && statusMessages[error.response.status]) return statusMessages[error.response.status]
+  if (error.request) return 'Нет ответа от сервера. Проверьте подключение.'
+
+  return 'Произошла ошибка. Попробуйте еще раз.'
+}
+
 export const useGlobalStore = defineStore('global', {
   state: () => ({
     api: {
@@ -90,6 +152,7 @@ export const useGlobalStore = defineStore('global', {
         create_order: '/orders/create',
         update_order: (id) => `/orders/${id}/update`,
         update_order_status: (id) => `/orders/${id}/status`,
+        delete_order: (id) => `/orders/${id}`,
       },
     },
 
@@ -124,8 +187,6 @@ export const useGlobalStore = defineStore('global', {
             : headers,
         })
 
-        console.log(response)
-
         return response.data
       } catch (err) {
         this.handleError(err)
@@ -136,34 +197,29 @@ export const useGlobalStore = defineStore('global', {
     },
 
     handleError(error) {
-      if (error.response) {
-        switch (error.response.status) {
-          case 401:
+      const message = getReadableErrorMessage(error)
 
-            authStore.logout()
-            break
-          case 403:
-
-            break
-          case 404:
-
-            break
-          case 500:
-
-            break
-          default:
-
-        }
-      } else if (error.request) {
-        this.error = 'Нет ответа от сервера. Проверьте подключение.'
-      } else {
-        this.error = 'Ошибка при отправке запроса: ' + error.message
+      if (error.response?.status === 401) {
+        authStore.logout()
       }
 
+      if (error.response) {
+        this.error = message
+      } else if (error.request) {
+        this.error = message
+      } else {
+        this.error = message
+      }
 
-      const message = error.response?.data?.error || error.response?.data?.message || this.error
-      toast.error(message || 'Произошла ошибка')
-      console.error('API Error:', message)
+      toast.error(message)
+      console.error('API Error:', {
+        message,
+        status: error.response?.status,
+        url: error.config?.url,
+        method: error.config?.method,
+        response: error.response?.data,
+        originalMessage: error.message,
+      })
     },
 
     clearError() {

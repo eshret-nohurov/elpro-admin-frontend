@@ -4,6 +4,7 @@
  * Редактирует подкатегорию и сохраняет связь с родительской категорией.
  */
 import { useGlobalStore } from '@/stores/global'
+import { resolveMediaUrl } from '@/utils/media'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
@@ -113,7 +114,7 @@ const submitForm = async () => {
     formData.append('name', JSON.stringify(name))
     formData.append('url', form.value.url)
     formData.append('category', form.value.category)
-    if (form.value.image) {
+    if (form.value.image instanceof File) {
       formData.append('icon', form.value.image)
     }
 
@@ -326,9 +327,9 @@ onMounted(fetchCategoryForSubcategory)
         />
       </div>
 
-      <div v-if="!previewUrl" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
+      <div v-if="!previewUrl && form.image" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
         <img
-          :src="`/Users/eshret/Documents/Programming/Projects/elpro/backend${form.image}`"
+          :src="resolveMediaUrl(form.image)"
           alt="Превью изображения"
           class="rounded border border-gray-700 w-full h-full object-cover object-center"
         />

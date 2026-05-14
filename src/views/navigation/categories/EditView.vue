@@ -4,6 +4,7 @@
  * Редактирует категорию и сохраняет связи дерева без ручного изменения структуры.
  */
 import { useGlobalStore } from '@/stores/global'
+import { resolveMediaUrl } from '@/utils/media'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
@@ -125,7 +126,7 @@ const submitForm = async () => {
     formData.append('url', form.value.url)
     formData.append('parentId', form.value.categories ? form.value.categories.value : '')
     formData.append('position', form.value.position)
-    if (form.value.image) {
+    if (form.value.image instanceof File) {
       formData.append('icon', form.value.image)
     }
 
@@ -357,9 +358,9 @@ onMounted(fetchCategoryForList)
         />
       </div>
 
-      <div v-if="!previewUrl" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
+      <div v-if="!previewUrl && form.image" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
         <img
-          :src="`/Users/eshret/Documents/Programming/Projects/elpro/backend${form.image}`"
+          :src="resolveMediaUrl(form.image)"
           alt="Превью изображения"
           class="rounded border border-gray-700 w-full h-full object-cover object-center"
         />

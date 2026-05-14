@@ -6,6 +6,7 @@
 import AppHelpModal from '@/components/AppHelpModal.vue'
 
 import { useGlobalStore } from '@/stores/global'
+import { resolveMediaUrl } from '@/utils/media'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
@@ -86,7 +87,9 @@ const submitForm = async () => {
     const formData = new FormData()
     formData.append('name', form.value.name)
     formData.append('url', form.value.url)
-    formData.append('image', form.value.image)
+    if (form.value.image instanceof File) {
+      formData.append('image', form.value.image)
+    }
 
     await globalStore.makeApiRequest({
       method: 'POST',
@@ -243,9 +246,9 @@ onMounted(fetchSlide)
         />
       </div>
 
-      <div v-if="!previewUrl" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
+      <div v-if="!previewUrl && form.image" class="mt-4 w-full max-w-xs overflow-hidden sm:ml-10">
         <img
-          :src="`/Users/eshret/Documents/Programming/Projects/elpro/backend${form.image}`"
+          :src="resolveMediaUrl(form.image)"
           alt="Превью изображения"
           class="rounded border border-gray-700 w-full h-full object-cover object-center"
         />

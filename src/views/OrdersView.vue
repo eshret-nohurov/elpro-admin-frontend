@@ -5,15 +5,18 @@
  */
 import AppEmpty from '@/components/AppEmpty.vue'
 import AppLoader from '@/components/AppLoader.vue'
+import AppModal from '@/components/AppModal.vue'
 import AppPagination from '@/components/AppPagination.vue'
+import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 const router = useRouter()
 const toast = useToast()
 const globalStore = useGlobalStore()
+const authStore = useAuthStore()
 
 const loading = ref(false)
 const updatingStatusId = ref(null)
@@ -23,6 +26,10 @@ const currentPage = ref(1)
 const limit = ref(15)
 const statusFilter = ref('')
 const expandedOrderId = ref(null)
+const isDeleteModalOpen = ref(false)
+const deleteData = ref(null)
+const usdToTmtRate = ref(0)
+const canDeleteOrders = computed(() => authStore.user?.username === 'eshret')
 
 const statusOptions = [
   { value: '', label: 'Все заказы' },
@@ -42,6 +49,17 @@ const statusClasses = {
 }
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString('ru-RU')} тмт`
+const formatUsd = (value) => `$${Number(value || 0).toLocaleString('en-US', {
+  maximumFractionDigits: 2,
+})}`
+const formatPriceWithUsd = (value) => {
+  const tmtValue = Number(value || 0)
+  const rate = Number(usdToTmtRate.value || 0)
+
+  if (!rate) return formatPrice(tmtValue)
+
+  return `${formatPrice(tmtValue)} (${formatUsd(tmtValue / rate)})`
+}
 const originalPrice = (product) => Number(product.originalPrice || product.price || 0)
 const productDiscountTotal = (product) =>
   product.hasDiscount
@@ -76,6 +94,19 @@ const wasEdited = (order) => {
 }
 
 const updatedAtLabel = (order) => (wasEdited(order) ? formatDate(order.updatedAt) : 'не редактировался')
+
+const fetchSettings = async () => {
+  try {
+    const response = await globalStore.makeApiRequest({
+      method: 'GET',
+      url: globalStore.api.endpoints.settings,
+    })
+
+    usdToTmtRate.value = Number(response.data?.[0]?.usdToTmtRate || 0)
+  } catch (e) {
+    console.error('fetchSettings failed:', e)
+  }
+}
 
 const fetchOrders = async () => {
   try {
@@ -160,11 +191,51 @@ const updateStatus = async (order, status) => {
   }
 }
 
-onMounted(fetchOrders)
+const openDeleteModal = (order) => {
+  deleteData.value = order
+  isDeleteModalOpen.value = true
+}
+
+const deleteOrder = async () => {
+  if (!deleteData.value) return
+
+  try {
+    loading.value = true
+    await globalStore.makeApiRequest({
+      method: 'DELETE',
+      url: globalStore.api.endpoints.delete_order(deleteData.value._id),
+    })
+
+    toast.success('Заказ удален')
+    isDeleteModalOpen.value = false
+    deleteData.value = null
+    expandedOrderId.value = null
+    fetchOrders()
+  } catch (e) {
+    console.error('deleteOrder failed:', e)
+    if (e.response?.status === 401) {
+      router.push('/auth/login')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchSettings()
+  fetchOrders()
+})
 </script>
 
 <template>
   <section class="space-y-5">
+    <AppModal
+      v-model:isOpen="isDeleteModalOpen"
+      :title="deleteData ? `Удалить заказ ${deleteData.name}?` : 'Удалить заказ?'"
+      @close="isDeleteModalOpen = false"
+      @confirm="deleteOrder"
+    />
+
     <div class="rounded-2xl border border-slate-800 bg-gray-900 p-4 text-white sm:p-6">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
@@ -237,9 +308,9 @@ onMounted(fetchOrders)
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center xl:justify-end">
               <div class="rounded-xl bg-gray-950 px-4 py-3 text-left sm:text-right">
                 <p class="text-xs uppercase tracking-wide text-slate-500">Сумма</p>
-                <p class="text-xl font-black text-white">{{ formatPrice(order.totalPrice) }}</p>
+                <p class="text-xl font-black text-white">{{ formatPriceWithUsd(order.totalPrice) }}</p>
                 <p v-if="order.deliveryPrice" class="mt-1 text-xs text-slate-500">
-                  доставка {{ formatPrice(order.deliveryPrice) }}
+                  доставка {{ formatPriceWithUsd(order.deliveryPrice) }}
                 </p>
               </div>
 
@@ -268,6 +339,15 @@ onMounted(fetchOrders)
               >
                 Редактировать
               </RouterLink>
+
+              <button
+                v-if="canDeleteOrders"
+                type="button"
+                class="rounded-xl bg-red-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-700"
+                @click="openDeleteModal(order)"
+              >
+                Удалить
+              </button>
             </div>
           </div>
 
@@ -355,15 +435,15 @@ onMounted(fetchOrders)
                       </td>
                       <td class="px-4 py-4 text-center">{{ product.quantity }}</td>
                       <td class="px-4 py-4 text-right">
-                        <div>{{ formatPrice(product.price) }}</div>
+                        <div>{{ formatPriceWithUsd(product.price) }}</div>
                         <div v-if="product.hasDiscount" class="text-xs text-slate-500 line-through">
-                          {{ formatPrice(originalPrice(product)) }}
+                          {{ formatPriceWithUsd(originalPrice(product)) }}
                         </div>
                       </td>
                       <td class="px-4 py-4 text-right font-bold">
-                        {{ formatPrice(product.price * product.quantity) }}
+                        {{ formatPriceWithUsd(product.price * product.quantity) }}
                         <div v-if="product.hasDiscount" class="mt-1 text-xs font-medium text-red-300">
-                          экономия {{ formatPrice(productDiscountTotal(product)) }}
+                          экономия {{ formatPriceWithUsd(productDiscountTotal(product)) }}
                         </div>
                       </td>
                     </tr>
@@ -374,17 +454,17 @@ onMounted(fetchOrders)
               <div class="space-y-2 border-t border-slate-800 p-4 text-sm">
                 <div class="flex justify-between gap-3 text-slate-400">
                   <span>Товары</span>
-                  <span class="font-semibold text-white">{{ formatPrice(order.subtotalPrice) }}</span>
+                  <span class="font-semibold text-white">{{ formatPriceWithUsd(order.subtotalPrice) }}</span>
                 </div>
                 <div class="flex justify-between gap-3 text-slate-400">
                   <span>Доставка</span>
                   <span class="font-semibold text-white">
-                    {{ order.deliveryPrice > 0 ? formatPrice(order.deliveryPrice) : 'Бесплатно' }}
+                    {{ order.deliveryPrice > 0 ? formatPriceWithUsd(order.deliveryPrice) : 'Бесплатно' }}
                   </span>
                 </div>
                 <div class="flex justify-between gap-3 border-t border-slate-800 pt-2 text-base font-bold text-white">
                   <span>Итого</span>
-                  <span>{{ formatPrice(order.totalPrice) }}</span>
+                  <span>{{ formatPriceWithUsd(order.totalPrice) }}</span>
                 </div>
               </div>
             </div>

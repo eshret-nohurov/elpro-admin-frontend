@@ -4,7 +4,7 @@
  * Собирает форму создания товара с переводами, скидкой, остатком, изображениями и характеристиками.
  */
 import { useGlobalStore } from '@/stores/global'
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 import { useRouter } from 'vue-router'
@@ -41,6 +41,12 @@ const errors = ref({})
 const loading = ref(false)
 const submitting = ref(false)
 const success = ref(false)
+const imagePreviewUrls = ref([])
+
+const revokeImagePreviews = () => {
+  imagePreviewUrls.value.forEach((url) => URL.revokeObjectURL(url))
+  imagePreviewUrls.value = []
+}
 
 
 const schema = yup.object({
@@ -231,6 +237,8 @@ const removeSpecification = (index) => {
 
 const handleFileUpload = (event) => {
   try {
+    revokeImagePreviews()
+
     const files = event.target.files
 
 
@@ -259,6 +267,7 @@ const handleFileUpload = (event) => {
 
 
     form.value.images = imageFiles
+    imagePreviewUrls.value = imageFiles.map((file) => URL.createObjectURL(file))
   } catch (error) {
     console.error('Ошибка загрузки файлов:', error)
     form.value.images = null
@@ -267,6 +276,7 @@ const handleFileUpload = (event) => {
 }
 
 onMounted(fetchCategory)
+onBeforeUnmount(revokeImagePreviews)
 </script>
 
 <template>
@@ -513,6 +523,15 @@ onMounted(fetchCategory)
               <p v-if="errors.images" class="text-red-600 text-sm">
                 {{ errors.images }}
               </p>
+              <div v-if="imagePreviewUrls.length" class="mt-3 grid grid-cols-2 gap-2">
+                <img
+                  v-for="(src, index) in imagePreviewUrls"
+                  :key="src"
+                  :src="src"
+                  :alt="`Превью товара ${index + 1}`"
+                  class="aspect-square rounded border border-gray-700 object-cover object-center"
+                />
+              </div>
             </div>
           </div>
 

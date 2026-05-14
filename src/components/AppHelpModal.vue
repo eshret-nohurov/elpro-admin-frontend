@@ -17,7 +17,7 @@ const onClose = () => emit('close')
     v-show="isOpen"
     @click.self="onClose"
   >
-    <div class="w-[100%] p-10 m-auto shadow-lg rounded-2xl bg-gray-900">
+    <div class="max-h-[90vh] w-full max-w-4xl overflow-y-auto p-6 m-auto shadow-lg rounded-2xl bg-gray-900 sm:p-10">
       <div class="w-full h-full">
         <div class="flex flex-col justify-between h-full text-gray-200">
           <h1 class="text-3xl font-bold text-blue-400 border-b-2 border-blue-500 pb-2 mb-6">
@@ -31,18 +31,32 @@ const onClose = () => emit('close')
 
 
           <div class="bg-dark-800 border-l-4 border-blue-500 p-6 rounded-lg mb-6 shadow-lg">
-            <h2 class="text-xl font-semibold text-blue-300 mb-4">Основные параметры</h2>
+            <h2 class="text-xl font-semibold text-blue-300 mb-4">Главный баннер</h2>
             <ul class="space-y-3 list-disc pl-5">
               <li><span class="font-medium">Формат файла:</span> JPG, JPEG или PNG</li>
               <li>
-                <span class="font-medium">Соотношение сторон:</span>
+                <span class="font-medium">Desktop изображение:</span>
                 <span class="font-bold"> 21:9 </span>
-                <span class="text-blue-300">для промо баннеров это требование ниже!</span>
+                для компьютеров. Рекомендуемые размеры:
+                <span class="font-bold">2560x1080</span>,
+                <span class="font-bold">2100x900</span> или больше в той же пропорции.
               </li>
               <li>
-                <span class="font-medium">Разрешение:</span> не менее
-                <span class="font-bold"> 2560x1080 пикселей </span>
-                <span class="text-blue-300">для промо баннеров это требование ниже!</span>
+                <span class="font-medium">Телефон/планшет изображение:</span>
+                <span class="font-bold"> 16:9 </span>
+                для телефонов и планшетов. Рекомендуемые размеры:
+                <span class="font-bold">1920x1080</span>,
+                <span class="font-bold">1280x720</span> или больше в той же пропорции.
+              </li>
+              <li>
+                <span class="font-medium">Почему нужны два файла:</span>
+                desktop-баннер широкий и низкий, а на телефоне такой кадр будет слишком сильно обрезаться.
+                Поэтому для мобильных и планшетов загружается отдельная версия 16:9.
+              </li>
+              <li>
+                <span class="font-medium">Безопасная зона:</span>
+                важный текст, логотипы и товар лучше держать ближе к центру кадра.
+                Сайт использует обрезку <span class="font-bold">object-cover</span>, чтобы не было пустых полос.
               </li>
               <li>
                 <span class="font-medium">Максимальный размер файла:</span>
@@ -93,7 +107,8 @@ const onClose = () => emit('close')
           </div>
 
           <p class="italic text-gray-400">
-            Несоответствующие изображения могут быть отклонены системой.
+            Несоответствующие изображения могут загрузиться, но на сайте будут обрезаться сильнее.
+            Лучше заранее готовить макеты точно под указанные пропорции.
           </p>
         </div>
       </div>

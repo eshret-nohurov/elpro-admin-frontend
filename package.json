@@ -1,6 +1,7 @@
 {
   "name": "elpro-admin",
   "version": "1.0.0",
+  "author": "Eshret Nohutov",
   "private": true,
   "type": "module",
   "scripts": {

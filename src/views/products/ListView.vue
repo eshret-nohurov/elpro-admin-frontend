@@ -37,7 +37,7 @@ const hasActiveFilters = computed(() =>
   Boolean(filters.value.search || filters.value.discount || filters.value.category || filters.value.stock),
 )
 
-const formatPrice = (value) => `${Number(value || 0).toLocaleString('ru-RU')} тмт`
+const formatPrice = (value) => `$${Number(value || 0).toLocaleString('en-US')}`
 const formatDate = (value) => {
   if (!value) return ''
 
