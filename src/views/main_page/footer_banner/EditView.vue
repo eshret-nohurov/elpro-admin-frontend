@@ -34,6 +34,12 @@ const form = ref({
   image: null,
 })
 const isModalOpen = ref(false)
+const helpModalType = ref('image')
+
+const openHelpModal = type => {
+  helpModalType.value = type
+  isModalOpen.value = true
+}
 
 
 const schema = yup.object({
@@ -146,7 +152,11 @@ onMounted(fetchSlide)
 </script>
 
 <template>
-  <AppHelpModal v-model:isOpen="isModalOpen" @close="isModalOpen = false" />
+  <AppHelpModal
+    v-model:isOpen="isModalOpen"
+    :content-type="helpModalType"
+    @close="isModalOpen = false"
+  />
 
   <div class="overflow-x-auto bg-gray-900 p-4 rounded-lg">
 
@@ -186,7 +196,15 @@ onMounted(fetchSlide)
 
 
           <div class="w-65 mb-4 mr-4">
-            <label class="block text-sm font-medium text-gray-200 mb-2"> URL </label>
+            <label class="flex text-sm font-medium text-gray-200 mb-2">
+              URL
+              <div
+                class="ml-2 w-4 h-4 bg-indigo-600 rounded-4xl text-center text-xs cursor-pointer"
+                @click="openHelpModal('link')"
+              >
+                ?
+              </div>
+            </label>
             <input
               v-model="form.url"
               type="text"
@@ -201,7 +219,7 @@ onMounted(fetchSlide)
               Изображение <span class="text-red-600 ml-1">*</span>
               <div
                 class="ml-2 w-4 h-4 bg-indigo-600 rounded-4xl text-center text-xs cursor-pointer"
-                @click="isModalOpen = true"
+                @click="openHelpModal('image')"
               >
                 ?
               </div>

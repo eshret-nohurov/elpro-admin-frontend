@@ -1,6 +1,10 @@
 <script setup>
 defineProps({
   isOpen: Boolean,
+  contentType: {
+    type: String,
+    default: 'image',
+  },
 })
 
 const emit = defineEmits(['close'])
@@ -20,6 +24,51 @@ const onClose = () => emit('close')
     <div class="max-h-[90vh] w-full max-w-4xl overflow-y-auto p-6 m-auto shadow-lg rounded-2xl bg-gray-900 sm:p-10">
       <div class="w-full h-full">
         <div class="flex flex-col justify-between h-full text-gray-200">
+          <template v-if="contentType === 'link'">
+            <h1 class="text-3xl font-bold text-blue-400 border-b-2 border-blue-500 pb-2 mb-6">
+              Как заполнить ссылку баннера
+            </h1>
+
+            <div class="bg-dark-800 border-l-4 border-blue-500 p-6 rounded-lg mb-6 shadow-lg">
+              <h2 class="text-xl font-semibold text-blue-300 mb-4">Главное правило</h2>
+              <ul class="space-y-4 list-disc pl-5">
+                <li>
+                  Если баннер должен открыть страницу этого сайта, вставляй только путь после языка.
+                  Например: <span class="font-mono font-bold text-white">/category/iphone</span>.
+                </li>
+                <li>
+                  Язык писать не нужно. Сайт сам добавит текущий язык:
+                  <span class="font-mono font-bold text-white">/ru/category/iphone</span>,
+                  <span class="font-mono font-bold text-white">/tm/category/iphone</span>
+                  или <span class="font-mono font-bold text-white">/en/category/iphone</span>.
+                </li>
+                <li>
+                  Если ссылка ведет на другой сайт, вставляй полный адрес с
+                  <span class="font-mono font-bold text-white">https://</span>.
+                  Например: <span class="font-mono font-bold text-white">https://apple.com</span>.
+                  Такая ссылка откроется в новой вкладке.
+                </li>
+                <li>
+                  Если поле оставить пустым, баннер будет просто картинкой без клика.
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-dark-800 border-l-4 border-emerald-500 p-6 rounded-lg mb-6 shadow-lg">
+              <h2 class="text-xl font-semibold text-emerald-300 mb-4">Примеры</h2>
+              <ul class="space-y-3 list-disc pl-5">
+                <li><span class="font-mono font-bold text-white">/category/iphone</span> - категория iPhone на этом сайте</li>
+                <li><span class="font-mono font-bold text-white">/product/iphone-15-pro</span> - карточка товара на этом сайте</li>
+                <li><span class="font-mono font-bold text-white">https://apple.com</span> - внешний сайт в новой вкладке</li>
+              </ul>
+            </div>
+
+            <p class="italic text-gray-400">
+              Проще говоря: внутренние ссылки начинаются с обычного слеша, внешние - с https://.
+            </p>
+          </template>
+
+          <template v-else>
           <h1 class="text-3xl font-bold text-blue-400 border-b-2 border-blue-500 pb-2 mb-6">
             Требования к изображениям
           </h1>
@@ -110,6 +159,7 @@ const onClose = () => emit('close')
             Несоответствующие изображения могут загрузиться, но на сайте будут обрезаться сильнее.
             Лучше заранее готовить макеты точно под указанные пропорции.
           </p>
+          </template>
         </div>
       </div>
     </div>

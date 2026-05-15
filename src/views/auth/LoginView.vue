@@ -1,7 +1,7 @@
 <script setup>
 /*
  * Login Form
- * Выполняет вход в админку и перед отправкой получает Google reCAPTCHA v3 token.
+ * Выполняет вход в админку по логину и паролю.
  */
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
@@ -17,55 +17,10 @@ const router = useRouter()
 const username = ref('')
 const password = ref('')
 const isSubmitting = ref(false)
-const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
-const recaptchaAction = 'admin_login'
-
-const loadRecaptchaScript = () => {
-  if (!recaptchaSiteKey) {
-    return Promise.reject(new Error('Ключ reCAPTCHA не настроен'))
-  }
-
-  if (window.grecaptcha) {
-    return Promise.resolve(window.grecaptcha)
-  }
-
-  return new Promise((resolve, reject) => {
-    const existingScript = document.querySelector('script[data-recaptcha-v3]')
-
-    if (existingScript) {
-      existingScript.addEventListener('load', () => resolve(window.grecaptcha), { once: true })
-      existingScript.addEventListener('error', reject, { once: true })
-      return
-    }
-
-    const script = document.createElement('script')
-    script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`
-    script.async = true
-    script.defer = true
-    script.dataset.recaptchaV3 = 'true'
-    script.onload = () => resolve(window.grecaptcha)
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
-}
-
-const getRecaptchaToken = async () => {
-  const grecaptcha = await loadRecaptchaScript()
-
-  return new Promise((resolve, reject) => {
-    grecaptcha.ready(() => {
-      grecaptcha
-        .execute(recaptchaSiteKey, { action: recaptchaAction })
-        .then(resolve)
-        .catch(reject)
-    })
-  })
-}
 
 const handleLogin = async () => {
   try {
     isSubmitting.value = true
-    const recaptchaToken = await getRecaptchaToken()
 
     const response = await globalStore.makeApiRequest({
       method: 'POST',
@@ -73,8 +28,6 @@ const handleLogin = async () => {
       data: {
         username: username.value,
         password: password.value,
-        recaptchaToken,
-        recaptchaAction,
       },
       requreAuth: false,
     })
@@ -84,9 +37,6 @@ const handleLogin = async () => {
     router.push('/')
   } catch (error) {
     console.error('Login failed:', error)
-    if (!error.response) {
-      toast.error(error.message || 'Не удалось пройти reCAPTCHA')
-    }
   } finally {
     isSubmitting.value = false
   }

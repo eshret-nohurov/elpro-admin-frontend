@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
       'process.env': env,
     },
     plugins: [vue(), vueDevTools(), tailwindcss()],
-    base: './',
+    base: '/',
     resolve: {
       alias: [
         {
