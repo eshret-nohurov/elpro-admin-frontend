@@ -8,7 +8,6 @@ import { defineStore } from 'pinia'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
-const authStore = useAuthStore()
 
 const statusMessages = {
   400: 'Проверьте заполненные поля. В данных есть ошибка.',
@@ -173,6 +172,7 @@ export const useGlobalStore = defineStore('global', {
       this.error = null
 
       try {
+        const authStore = useAuthStore()
         const fullUrl = this.api.baseURL + url
         const response = await axios({
           method,
@@ -197,6 +197,7 @@ export const useGlobalStore = defineStore('global', {
     },
 
     handleError(error) {
+      const authStore = useAuthStore()
       const message = getReadableErrorMessage(error)
 
       if (error.response?.status === 401) {
