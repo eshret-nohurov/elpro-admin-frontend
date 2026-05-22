@@ -9,11 +9,12 @@ import AppModal from '@/components/AppModal.vue'
 import AppPagination from '@/components/AppPagination.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 const router = useRouter()
+const route = useRoute()
 const toast = useToast()
 const globalStore = useGlobalStore()
 const authStore = useAuthStore()
@@ -24,7 +25,7 @@ const orders = ref([])
 const meta = ref(null)
 const currentPage = ref(1)
 const limit = ref(15)
-const statusFilter = ref('')
+const statusFilter = ref(String(route.query.status || ''))
 const expandedOrderId = ref(null)
 const isDeleteModalOpen = ref(false)
 const deleteData = ref(null)
@@ -225,6 +226,19 @@ onMounted(() => {
   fetchSettings()
   fetchOrders()
 })
+
+watch(
+  () => route.query.status,
+  (status) => {
+    const nextStatus = String(status || '')
+    if (nextStatus === statusFilter.value) return
+
+    statusFilter.value = nextStatus
+    currentPage.value = 1
+    expandedOrderId.value = null
+    fetchOrders()
+  },
+)
 </script>
 
 <template>

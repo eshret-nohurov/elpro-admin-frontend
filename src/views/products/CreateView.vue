@@ -84,8 +84,8 @@ const submitForm = async () => {
 
     const shortDescription = {
       ru: form.value.shortDesсRU,
-      tm: form.value.shortDesсTM,
-      en: form.value.shortDesсEN,
+      tm: form.value.shortDescTM,
+      en: form.value.shortDescEN,
     }
 
     const fullDescription = {
